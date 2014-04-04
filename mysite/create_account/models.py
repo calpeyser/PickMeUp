@@ -20,4 +20,3 @@ class Ride(models.Model):
 	start_time     = models.TimeField(null = True);
 	end            = models.OneToOneField(Location, related_name='end_of');
 	payment        = models.IntegerField(null = True);
-
