@@ -31,3 +31,7 @@ def ride(request):
 	return render(request, 'contact.html', {
         'form': ride_form,
     })
+
+# Create your views here.
+def test_view(request):
+	return render(request, 'create_account/index.html');
