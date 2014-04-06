@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class User(models.Model):
 	netid          = models.CharField(max_length = 50, unique = True);
 	phone_number   = models.CharField(max_length = 12); # eventually, validate with regexp
@@ -20,3 +21,8 @@ class Ride(models.Model):
 	start_time     = models.TimeField(null = True);
 	end            = models.OneToOneField(Location, related_name='end_of');
 	payment        = models.IntegerField(null = True);
+
+	#--------------PLACEHOLDER METHOD--------------------#
+	def generate_swath(self):
+		return [];
+	#----------------------------------------------------#
