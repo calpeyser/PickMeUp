@@ -1,3 +1,4 @@
+import CASClient, os
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from create_account.forms import UserForm, RideForm
@@ -32,3 +33,7 @@ def ride(request):
         'form': ride_form,
     })
 
+def authenticate(request):
+	C = CASClient.CASClient()
+	netid = C.Authenticate()
+	print "Hello %s" % netid
