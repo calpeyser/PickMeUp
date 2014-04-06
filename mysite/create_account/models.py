@@ -20,3 +20,7 @@ class Ride(models.Model):
 	start_time     = models.TimeField(null = True);
 	end            = models.OneToOneField(Location, related_name='end_of');
 	payment        = models.IntegerField(null = True);
+	
+class Home(models.Model):
+	start = models.CharField(max_length = 50);
+	end = models.CharField(max_length = 50);

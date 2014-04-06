@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
-from create_account.forms import UserForm, RideForm
+from create_account.forms import UserForm, RideForm, HomeForm
+from create_account.models import Location
 
 def user(request):
 	if request.method == 'POST': # If the form has been submitted...
@@ -31,4 +32,31 @@ def ride(request):
 	return render(request, 'contact.html', {
         'form': ride_form,
     })
+    
+def home(request):
+	if request.method == 'POST':
+		home_form = HomeForm(request.POST)
+		if home_form.is_valid():
+			start = Location(home_form.fields['start'], None, None)
+			end = Location(home_form.fields['end'], None, None)
+			try:
+				request.POST['drive']
+			except NameError:
+				try:
+					request.POST['hitch']
+				except NameError:
+					raise Http404
+				return render(request, 'find_ride', {
+					start,
+					end
+				})
+			return render(request, 'create_ride', {
+				start,
+				end
+			})
+	else:
+		home_form = HomeForm()
+	return render(request, 'create_account/home.html', {
+		'form': home_form,
+	})
 
