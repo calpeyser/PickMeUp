@@ -14,5 +14,6 @@ urlpatterns = patterns('',
     url(r'^create_account/', 'create_account.views.user'),
     url(r'^home/', 'create_account.views.home'),
     url(r'^$', 'create_account.views.authenticate'),
-	url(r'^create_ride/', 'create_account.views.ride')
+	url(r'^create_ride/', 'create_account.views.ride'),
+	url(r'^find_ride/', 'create_account.views.show_rides')
 )

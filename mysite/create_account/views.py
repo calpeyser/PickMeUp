@@ -5,13 +5,14 @@ from create_account.models import Location
 from create_account.models import User
 from create_account.models import Ride
 from create_account.models import Location
+import datetime
 
-
+# view to show form to populate user data
 def user(request):
 	if request.method == 'POST': # If the form has been submitted...
 		user_form = UserForm(request.POST)
 		if user_form.is_valid():
-            # Process the data in form.cleaned_data
+			# Process the data in form.cleaned_data
 			user_form.save()
 			return HttpResponseRedirect('create_account/') # Redirect after POST -- do we want this?
 	else:
@@ -22,6 +23,7 @@ def user(request):
         'form': user_form,
     })
 
+# view to show form to populate ride data
 def ride(request):
 	if request.method == 'POST': # If the form has been submitted...
 		ride_form = RideForm(request.POST)
@@ -66,9 +68,45 @@ def home(request):
 		'form': home_form,
 	})
 
+# view to show all rides that match a query, hopefully?
+def show_rides(request):
+	# actually process request, for now hard-code
+	start = (40.343089, -74.657862)	# baker rink	
+	end = (40.306239, -74.676541)	# walmart
+	query = Ride.objects.filter(start_date__gt=datetime.now()).values()
+	results = []
+	# make list of acceptable rides
+	for ride in query:
+		i = 0
+		found_start = False
+		found_end = False
+		# if we dont' have reasonable swaths, then match by radius from dest.
+		swath = ride[swath]
+		while (i < range(swath) and (not found_end or not found_start)):
+			x1 = swath[i]
+			y1 = swath[i+1]
+			x2 = swath[i+2]
+			y2 = swath[i+3]
+			if x1 <= end[0] <= x2 and y1 <= end[1] <= y2:
+				found_end = True
+			if x1 <= start[0] <= x2 and y1 <= start[1] <= y2:
+				found_start = True
+			i += 4
+		if found_start and found_end:
+			results.append(ride)
+	for item in sorted(results, key=lambda ride: ride[start_date]):
+		return render(request, 'contact.html', {
+    		'origin': item[start][name],
+    		'destination': item[end][name],
+		})
+
 def authenticate(request):
 	# C = CASClient.CASClient()
 	# netid = C.Authenticate()
 	netid = "peyser"
 	request.session["netid"] = netid
 	return render(request, '/home')
+
+
+
+

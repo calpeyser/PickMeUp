@@ -19,6 +19,7 @@ class Ride(models.Model):
 	start_date     = models.DateField(null = True); 
 	start_time     = models.TimeField(null = True);
 	end            = models.OneToOneField(Location, related_name='end_of');
+	swath          = models.CommaSeparatedIntegerField(max_length = 100); # might want to tweak this but eh?
 	payment        = models.IntegerField(null = True);
 	
 class Home(models.Model):
