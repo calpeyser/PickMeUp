@@ -1,4 +1,7 @@
 from django.forms import ModelForm
+from django import forms
+from create_account.models import User
+from create_account.models import Ride
 
 # Create the form class for users
 class UserForm(ModelForm):

@@ -67,6 +67,11 @@
       <div class="starter-template">
         <h1>Going Someplace?</h1>
         <p class="lead">Let us know about where you're headed, and we'll help you find people to go with.</p>
+
+        <form method="POST" action="/create_account/"> {% csrf_token %}
+          {{form.as_p}} 
+          <input type="submit" value="Submit">
+        </form>
       </div>
 
     </div><!-- /.container -->
