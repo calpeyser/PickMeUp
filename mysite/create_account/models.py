@@ -24,3 +24,9 @@ class Ride(models.Model):
 class Home(models.Model):
 	start = models.CharField(max_length = 50);
 	end = models.CharField(max_length = 50);
+
+
+	#--------------PLACEHOLDER METHOD--------------------#
+	def generate_swath(self):
+		return [];
+	#----------------------------------------------------#s

@@ -12,6 +12,7 @@ urlpatterns = patterns('',
 
     url(r'^admin/', include(admin.site.urls)),
     url(r'^create_account/', 'create_account.views.user'),
-    url(r'^home/', 'create_account.views.home')
-    url(r'^$', 'create_account.views.authenticate')
+    url(r'^home/', 'create_account.views.home'),
+    url(r'^$', 'create_account.views.authenticate'),
+	url(r'^create_ride/', 'create_account.views.ride')
 )
