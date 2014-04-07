@@ -62,6 +62,8 @@ def home(request):
 	})
 
 def authenticate(request):
-	C = CASClient.CASClient()
-	netid = C.Authenticate()
-	print "Hello %s" % netid
+	# C = CASClient.CASClient()
+	# netid = C.Authenticate()
+	netid = "peyser"
+	request.session["netid"] = netid
+	return render(request, '/home')
