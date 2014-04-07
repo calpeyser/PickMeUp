@@ -26,13 +26,9 @@ def ride(request):
 		ride_form = RideForm(request.POST)
 		if ride_form.is_valid():
             # Process the data in form.cleaned_data - eventually populate this from what you get from the homepage
-			ride_form.driver     = d;
-			ride_form.passengers = User.objects.all()[1];
-			ride_form.start      = Location.objects.all()[0];
-			ride_form.end        = Location.objects.all()[1];
-			ride_form.save();
-
-			return render(request, 'create_account/create_ride.html', {'form': ride_form,})			
+			new_ride = Ride(max_seats = ride_form.cleaned_data['max_seats'], open_seats = ride_form.cleaned_data['open_seats'], driver = User.objects.all()[0], start = Location.objects.all()[0], start_date = ride_form.cleaned_data['start_date'], start_time = ride_form.cleaned_data['start_time'], end = Location.objects.all()[1], payment = ride_form.cleaned_data['payment']);
+			new_ride.save();
+			return render(request, 'create_account/create_ride.html', {'form': ride_form,})
 			#return HttpResponseRedirect('/create_ride/') # Redirect after POST -- do we want this?
 	else:
 		ride_form = RideForm() # An unbound form
