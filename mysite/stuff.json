@@ -1,0 +1,846 @@
+[
+{
+    "pk": 1, 
+    "model": "contenttypes.contenttype", 
+    "fields": {
+        "model": "logentry", 
+        "name": "log entry", 
+        "app_label": "admin"
+    }
+},
+{
+    "pk": 2, 
+    "model": "contenttypes.contenttype", 
+    "fields": {
+        "model": "permission", 
+        "name": "permission", 
+        "app_label": "auth"
+    }
+},
+{
+    "pk": 3, 
+    "model": "contenttypes.contenttype", 
+    "fields": {
+        "model": "group", 
+        "name": "group", 
+        "app_label": "auth"
+    }
+},
+{
+    "pk": 4, 
+    "model": "contenttypes.contenttype", 
+    "fields": {
+        "model": "user", 
+        "name": "user", 
+        "app_label": "auth"
+    }
+},
+{
+    "pk": 5, 
+    "model": "contenttypes.contenttype", 
+    "fields": {
+        "model": "contenttype", 
+        "name": "content type", 
+        "app_label": "contenttypes"
+    }
+},
+{
+    "pk": 6, 
+    "model": "contenttypes.contenttype", 
+    "fields": {
+        "model": "session", 
+        "name": "session", 
+        "app_label": "sessions"
+    }
+},
+{
+    "pk": 7, 
+    "model": "contenttypes.contenttype", 
+    "fields": {
+        "model": "user", 
+        "name": "user", 
+        "app_label": "create_account"
+    }
+},
+{
+    "pk": 8, 
+    "model": "contenttypes.contenttype", 
+    "fields": {
+        "model": "location", 
+        "name": "location", 
+        "app_label": "create_account"
+    }
+},
+{
+    "pk": 9, 
+    "model": "contenttypes.contenttype", 
+    "fields": {
+        "model": "ride", 
+        "name": "ride", 
+        "app_label": "create_account"
+    }
+},
+{
+    "pk": "4ulf9779qtc595cckgu10ldg1kbj8r1l", 
+    "model": "sessions.session", 
+    "fields": {
+        "expire_date": "2014-04-21T23:50:27.356Z", 
+        "session_data": "ZmNhMjIxMzk1MTNmMWVmYjI3ZDQ2OTc3ZTY0ODk5NTU5NTg4MjRkOTp7Il9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIiwiX2F1dGhfdXNlcl9pZCI6MX0="
+    }
+},
+{
+    "pk": 1, 
+    "model": "create_account.user", 
+    "fields": {
+        "phone_number": "number", 
+        "rating": null, 
+        "netid": "dpenner"
+    }
+},
+{
+    "pk": 2, 
+    "model": "create_account.user", 
+    "fields": {
+        "phone_number": "valyasnumber", 
+        "rating": null, 
+        "netid": "valya"
+    }
+},
+{
+    "pk": 1, 
+    "model": "create_account.location", 
+    "fields": {
+        "coordinate": "40.343057, -74.657873", 
+        "name": "Baker Rink", 
+        "address": "Princeton, NJ 08540"
+    }
+},
+{
+    "pk": 2, 
+    "model": "create_account.location", 
+    "fields": {
+        "coordinate": "40.271863, -74.709512", 
+        "name": "Mercedes-Benz of Princeton", 
+        "address": "2910 U.s. 1, Lawrenceville, NJ, 08648"
+    }
+},
+{
+    "pk": 3, 
+    "model": "create_account.location", 
+    "fields": {
+        "coordinate": "40.714931, -74.010478", 
+        "name": "Daniel's House", 
+        "address": "71 Murray St, New York, NY, 10007"
+    }
+},
+{
+    "pk": 4, 
+    "model": "create_account.location", 
+    "fields": {
+        "coordinate": "40.342995, -74.660807", 
+        "name": "Almost Baker's Rink", 
+        "address": "w/e"
+    }
+},
+{
+    "pk": 1, 
+    "model": "create_account.ride", 
+    "fields": {
+        "open_seats": "7", 
+        "end": 2, 
+        "passengers": [
+            1
+        ], 
+        "start_time": "00:00:00", 
+        "driver": 1, 
+        "payment": 12, 
+        "max_seats": 8, 
+        "start": 1, 
+        "swath": "40.343106, -74.657841, 40.714931, -74.010478", 
+        "start_date": "2014-04-12"
+    }
+},
+{
+    "pk": 2, 
+    "model": "create_account.ride", 
+    "fields": {
+        "open_seats": "3", 
+        "end": 3, 
+        "passengers": [
+            1, 
+            2
+        ], 
+        "start_time": "00:00:00", 
+        "driver": 2, 
+        "payment": 8, 
+        "max_seats": 5, 
+        "start": 4, 
+        "swath": "40.271863, -74.709512, 40.343057, -74.657873", 
+        "start_date": "2014-04-09"
+    }
+},
+{
+    "pk": 1, 
+    "model": "auth.permission", 
+    "fields": {
+        "codename": "add_logentry", 
+        "name": "Can add log entry", 
+        "content_type": 1
+    }
+},
+{
+    "pk": 2, 
+    "model": "auth.permission", 
+    "fields": {
+        "codename": "change_logentry", 
+        "name": "Can change log entry", 
+        "content_type": 1
+    }
+},
+{
+    "pk": 3, 
+    "model": "auth.permission", 
+    "fields": {
+        "codename": "delete_logentry", 
+        "name": "Can delete log entry", 
+        "content_type": 1
+    }
+},
+{
+    "pk": 4, 
+    "model": "auth.permission", 
+    "fields": {
+        "codename": "add_permission", 
+        "name": "Can add permission", 
+        "content_type": 2
+    }
+},
+{
+    "pk": 5, 
+    "model": "auth.permission", 
+    "fields": {
+        "codename": "change_permission", 
+        "name": "Can change permission", 
+        "content_type": 2
+    }
+},
+{
+    "pk": 6, 
+    "model": "auth.permission", 
+    "fields": {
+        "codename": "delete_permission", 
+        "name": "Can delete permission", 
+        "content_type": 2
+    }
+},
+{
+    "pk": 7, 
+    "model": "auth.permission", 
+    "fields": {
+        "codename": "add_group", 
+        "name": "Can add group", 
+        "content_type": 3
+    }
+},
+{
+    "pk": 8, 
+    "model": "auth.permission", 
+    "fields": {
+        "codename": "change_group", 
+        "name": "Can change group", 
+        "content_type": 3
+    }
+},
+{
+    "pk": 9, 
+    "model": "auth.permission", 
+    "fields": {
+        "codename": "delete_group", 
+        "name": "Can delete group", 
+        "content_type": 3
+    }
+},
+{
+    "pk": 10, 
+    "model": "auth.permission", 
+    "fields": {
+        "codename": "add_user", 
+        "name": "Can add user", 
+        "content_type": 4
+    }
+},
+{
+    "pk": 11, 
+    "model": "auth.permission", 
+    "fields": {
+        "codename": "change_user", 
+        "name": "Can change user", 
+        "content_type": 4
+    }
+},
+{
+    "pk": 12, 
+    "model": "auth.permission", 
+    "fields": {
+        "codename": "delete_user", 
+        "name": "Can delete user", 
+        "content_type": 4
+    }
+},
+{
+    "pk": 13, 
+    "model": "auth.permission", 
+    "fields": {
+        "codename": "add_contenttype", 
+        "name": "Can add content type", 
+        "content_type": 5
+    }
+},
+{
+    "pk": 14, 
+    "model": "auth.permission", 
+    "fields": {
+        "codename": "change_contenttype", 
+        "name": "Can change content type", 
+        "content_type": 5
+    }
+},
+{
+    "pk": 15, 
+    "model": "auth.permission", 
+    "fields": {
+        "codename": "delete_contenttype", 
+        "name": "Can delete content type", 
+        "content_type": 5
+    }
+},
+{
+    "pk": 16, 
+    "model": "auth.permission", 
+    "fields": {
+        "codename": "add_session", 
+        "name": "Can add session", 
+        "content_type": 6
+    }
+},
+{
+    "pk": 17, 
+    "model": "auth.permission", 
+    "fields": {
+        "codename": "change_session", 
+        "name": "Can change session", 
+        "content_type": 6
+    }
+},
+{
+    "pk": 18, 
+    "model": "auth.permission", 
+    "fields": {
+        "codename": "delete_session", 
+        "name": "Can delete session", 
+        "content_type": 6
+    }
+},
+{
+    "pk": 19, 
+    "model": "auth.permission", 
+    "fields": {
+        "codename": "add_user", 
+        "name": "Can add user", 
+        "content_type": 7
+    }
+},
+{
+    "pk": 20, 
+    "model": "auth.permission", 
+    "fields": {
+        "codename": "change_user", 
+        "name": "Can change user", 
+        "content_type": 7
+    }
+},
+{
+    "pk": 21, 
+    "model": "auth.permission", 
+    "fields": {
+        "codename": "delete_user", 
+        "name": "Can delete user", 
+        "content_type": 7
+    }
+},
+{
+    "pk": 22, 
+    "model": "auth.permission", 
+    "fields": {
+        "codename": "add_location", 
+        "name": "Can add location", 
+        "content_type": 8
+    }
+},
+{
+    "pk": 23, 
+    "model": "auth.permission", 
+    "fields": {
+        "codename": "change_location", 
+        "name": "Can change location", 
+        "content_type": 8
+    }
+},
+{
+    "pk": 24, 
+    "model": "auth.permission", 
+    "fields": {
+        "codename": "delete_location", 
+        "name": "Can delete location", 
+        "content_type": 8
+    }
+},
+{
+    "pk": 25, 
+    "model": "auth.permission", 
+    "fields": {
+        "codename": "add_ride", 
+        "name": "Can add ride", 
+        "content_type": 9
+    }
+},
+{
+    "pk": 26, 
+    "model": "auth.permission", 
+    "fields": {
+        "codename": "change_ride", 
+        "name": "Can change ride", 
+        "content_type": 9
+    }
+},
+{
+    "pk": 27, 
+    "model": "auth.permission", 
+    "fields": {
+        "codename": "delete_ride", 
+        "name": "Can delete ride", 
+        "content_type": 9
+    }
+},
+{
+    "pk": 1, 
+    "model": "auth.user", 
+    "fields": {
+        "username": "valya", 
+        "first_name": "", 
+        "last_name": "", 
+        "is_active": true, 
+        "is_superuser": true, 
+        "is_staff": true, 
+        "last_login": "2014-04-07T23:50:27.353Z", 
+        "groups": [], 
+        "user_permissions": [], 
+        "password": "pbkdf2_sha256$12000$Nm5krUrteCRU$MolrI5BP/Bzk26Ye/MFcK9/lN6xrGWlFm1Qd3YEMNXY=", 
+        "email": "vbarboy@princeton.edu", 
+        "date_joined": "2014-04-07T23:46:07.256Z"
+    }
+},
+{
+    "pk": 1, 
+    "model": "admin.logentry", 
+    "fields": {
+        "action_flag": 1, 
+        "action_time": "2014-04-07T23:51:33.714Z", 
+        "object_repr": "Location object", 
+        "object_id": "1", 
+        "change_message": "", 
+        "user": 1, 
+        "content_type": 8
+    }
+},
+{
+    "pk": 2, 
+    "model": "admin.logentry", 
+    "fields": {
+        "action_flag": 1, 
+        "action_time": "2014-04-07T23:52:33.191Z", 
+        "object_repr": "Location object", 
+        "object_id": "2", 
+        "change_message": "", 
+        "user": 1, 
+        "content_type": 8
+    }
+},
+{
+    "pk": 3, 
+    "model": "admin.logentry", 
+    "fields": {
+        "action_flag": 1, 
+        "action_time": "2014-04-07T23:54:19.939Z", 
+        "object_repr": "Location object", 
+        "object_id": "3", 
+        "change_message": "", 
+        "user": 1, 
+        "content_type": 8
+    }
+},
+{
+    "pk": 4, 
+    "model": "admin.logentry", 
+    "fields": {
+        "action_flag": 1, 
+        "action_time": "2014-04-07T23:54:45.414Z", 
+        "object_repr": "User object", 
+        "object_id": "1", 
+        "change_message": "", 
+        "user": 1, 
+        "content_type": 7
+    }
+},
+{
+    "pk": 5, 
+    "model": "admin.logentry", 
+    "fields": {
+        "action_flag": 1, 
+        "action_time": "2014-04-07T23:57:26.211Z", 
+        "object_repr": "Ride object", 
+        "object_id": "1", 
+        "change_message": "", 
+        "user": 1, 
+        "content_type": 9
+    }
+},
+{
+    "pk": 6, 
+    "model": "admin.logentry", 
+    "fields": {
+        "action_flag": 1, 
+        "action_time": "2014-04-07T23:59:36.524Z", 
+        "object_repr": "User object", 
+        "object_id": "2", 
+        "change_message": "", 
+        "user": 1, 
+        "content_type": 7
+    }
+},
+{
+    "pk": 7, 
+    "model": "admin.logentry", 
+    "fields": {
+        "action_flag": 2, 
+        "action_time": "2014-04-08T00:00:46.206Z", 
+        "object_repr": "Location object", 
+        "object_id": "1", 
+        "change_message": "No fields changed.", 
+        "user": 1, 
+        "content_type": 8
+    }
+},
+{
+    "pk": 8, 
+    "model": "admin.logentry", 
+    "fields": {
+        "action_flag": 1, 
+        "action_time": "2014-04-08T00:01:00.151Z", 
+        "object_repr": "Location object", 
+        "object_id": "4", 
+        "change_message": "", 
+        "user": 1, 
+        "content_type": 8
+    }
+},
+{
+    "pk": 9, 
+    "model": "admin.logentry", 
+    "fields": {
+        "action_flag": 2, 
+        "action_time": "2014-04-08T00:01:05.575Z", 
+        "object_repr": "Location object", 
+        "object_id": "1", 
+        "change_message": "No fields changed.", 
+        "user": 1, 
+        "content_type": 8
+    }
+},
+{
+    "pk": 10, 
+    "model": "admin.logentry", 
+    "fields": {
+        "action_flag": 2, 
+        "action_time": "2014-04-08T00:01:08.138Z", 
+        "object_repr": "Location object", 
+        "object_id": "4", 
+        "change_message": "No fields changed.", 
+        "user": 1, 
+        "content_type": 8
+    }
+},
+{
+    "pk": 11, 
+    "model": "admin.logentry", 
+    "fields": {
+        "action_flag": 2, 
+        "action_time": "2014-04-08T00:01:51.869Z", 
+        "object_repr": "Location object", 
+        "object_id": "4", 
+        "change_message": "No fields changed.", 
+        "user": 1, 
+        "content_type": 8
+    }
+},
+{
+    "pk": 12, 
+    "model": "admin.logentry", 
+    "fields": {
+        "action_flag": 2, 
+        "action_time": "2014-04-08T00:01:54.691Z", 
+        "object_repr": "Location object", 
+        "object_id": "3", 
+        "change_message": "No fields changed.", 
+        "user": 1, 
+        "content_type": 8
+    }
+},
+{
+    "pk": 13, 
+    "model": "admin.logentry", 
+    "fields": {
+        "action_flag": 2, 
+        "action_time": "2014-04-08T00:01:57.530Z", 
+        "object_repr": "Location object", 
+        "object_id": "2", 
+        "change_message": "No fields changed.", 
+        "user": 1, 
+        "content_type": 8
+    }
+},
+{
+    "pk": 14, 
+    "model": "admin.logentry", 
+    "fields": {
+        "action_flag": 2, 
+        "action_time": "2014-04-08T00:02:00.270Z", 
+        "object_repr": "Location object", 
+        "object_id": "1", 
+        "change_message": "No fields changed.", 
+        "user": 1, 
+        "content_type": 8
+    }
+},
+{
+    "pk": 15, 
+    "model": "admin.logentry", 
+    "fields": {
+        "action_flag": 2, 
+        "action_time": "2014-04-08T00:02:48.476Z", 
+        "object_repr": "Ride object", 
+        "object_id": "1", 
+        "change_message": "Changed end.", 
+        "user": 1, 
+        "content_type": 9
+    }
+},
+{
+    "pk": 16, 
+    "model": "admin.logentry", 
+    "fields": {
+        "action_flag": 2, 
+        "action_time": "2014-04-08T00:03:51.236Z", 
+        "object_repr": "Location object", 
+        "object_id": "4", 
+        "change_message": "Changed coordinate.", 
+        "user": 1, 
+        "content_type": 8
+    }
+},
+{
+    "pk": 17, 
+    "model": "admin.logentry", 
+    "fields": {
+        "action_flag": 2, 
+        "action_time": "2014-04-08T00:04:07.905Z", 
+        "object_repr": "Location object", 
+        "object_id": "2", 
+        "change_message": "No fields changed.", 
+        "user": 1, 
+        "content_type": 8
+    }
+},
+{
+    "pk": 18, 
+    "model": "admin.logentry", 
+    "fields": {
+        "action_flag": 2, 
+        "action_time": "2014-04-08T00:04:11.396Z", 
+        "object_repr": "Location object", 
+        "object_id": "2", 
+        "change_message": "No fields changed.", 
+        "user": 1, 
+        "content_type": 8
+    }
+},
+{
+    "pk": 19, 
+    "model": "admin.logentry", 
+    "fields": {
+        "action_flag": 1, 
+        "action_time": "2014-04-08T00:04:25.721Z", 
+        "object_repr": "Ride object", 
+        "object_id": "2", 
+        "change_message": "", 
+        "user": 1, 
+        "content_type": 9
+    }
+},
+{
+    "pk": 20, 
+    "model": "admin.logentry", 
+    "fields": {
+        "action_flag": 2, 
+        "action_time": "2014-04-08T00:21:18.645Z", 
+        "object_repr": "Ride object", 
+        "object_id": "2", 
+        "change_message": "No fields changed.", 
+        "user": 1, 
+        "content_type": 9
+    }
+},
+{
+    "pk": 21, 
+    "model": "admin.logentry", 
+    "fields": {
+        "action_flag": 2, 
+        "action_time": "2014-04-08T00:21:28.321Z", 
+        "object_repr": "Ride object", 
+        "object_id": "1", 
+        "change_message": "Changed start_date.", 
+        "user": 1, 
+        "content_type": 9
+    }
+},
+{
+    "pk": 22, 
+    "model": "admin.logentry", 
+    "fields": {
+        "action_flag": 2, 
+        "action_time": "2014-04-08T00:28:27.064Z", 
+        "object_repr": "Ride object", 
+        "object_id": "2", 
+        "change_message": "Changed swath.", 
+        "user": 1, 
+        "content_type": 9
+    }
+},
+{
+    "pk": 23, 
+    "model": "admin.logentry", 
+    "fields": {
+        "action_flag": 2, 
+        "action_time": "2014-04-08T00:28:50.563Z", 
+        "object_repr": "Ride object", 
+        "object_id": "1", 
+        "change_message": "No fields changed.", 
+        "user": 1, 
+        "content_type": 9
+    }
+},
+{
+    "pk": 24, 
+    "model": "admin.logentry", 
+    "fields": {
+        "action_flag": 2, 
+        "action_time": "2014-04-08T00:29:00.536Z", 
+        "object_repr": "Ride object", 
+        "object_id": "1", 
+        "change_message": "No fields changed.", 
+        "user": 1, 
+        "content_type": 9
+    }
+},
+{
+    "pk": 25, 
+    "model": "admin.logentry", 
+    "fields": {
+        "action_flag": 2, 
+        "action_time": "2014-04-08T00:29:04.100Z", 
+        "object_repr": "Ride object", 
+        "object_id": "1", 
+        "change_message": "No fields changed.", 
+        "user": 1, 
+        "content_type": 9
+    }
+},
+{
+    "pk": 26, 
+    "model": "admin.logentry", 
+    "fields": {
+        "action_flag": 2, 
+        "action_time": "2014-04-08T00:29:20.461Z", 
+        "object_repr": "Ride object", 
+        "object_id": "2", 
+        "change_message": "Changed swath.", 
+        "user": 1, 
+        "content_type": 9
+    }
+},
+{
+    "pk": 27, 
+    "model": "admin.logentry", 
+    "fields": {
+        "action_flag": 2, 
+        "action_time": "2014-04-08T00:29:52.180Z", 
+        "object_repr": "Ride object", 
+        "object_id": "1", 
+        "change_message": "No fields changed.", 
+        "user": 1, 
+        "content_type": 9
+    }
+},
+{
+    "pk": 28, 
+    "model": "admin.logentry", 
+    "fields": {
+        "action_flag": 2, 
+        "action_time": "2014-04-08T00:38:17.169Z", 
+        "object_repr": "Ride object", 
+        "object_id": "2", 
+        "change_message": "No fields changed.", 
+        "user": 1, 
+        "content_type": 9
+    }
+},
+{
+    "pk": 29, 
+    "model": "admin.logentry", 
+    "fields": {
+        "action_flag": 2, 
+        "action_time": "2014-04-08T00:38:30.035Z", 
+        "object_repr": "Location object", 
+        "object_id": "1", 
+        "change_message": "No fields changed.", 
+        "user": 1, 
+        "content_type": 8
+    }
+},
+{
+    "pk": 30, 
+    "model": "admin.logentry", 
+    "fields": {
+        "action_flag": 2, 
+        "action_time": "2014-04-08T00:38:39.395Z", 
+        "object_repr": "Location object", 
+        "object_id": "2", 
+        "change_message": "No fields changed.", 
+        "user": 1, 
+        "content_type": 8
+    }
+},
+{
+    "pk": 31, 
+    "model": "admin.logentry", 
+    "fields": {
+        "action_flag": 2, 
+        "action_time": "2014-04-08T00:38:45.831Z", 
+        "object_repr": "Ride object", 
+        "object_id": "1", 
+        "change_message": "No fields changed.", 
+        "user": 1, 
+        "content_type": 9
+    }
+}
+]

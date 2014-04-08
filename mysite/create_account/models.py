@@ -5,10 +5,16 @@ class User(models.Model):
 	phone_number   = models.CharField(max_length = 12); # eventually, validate with regexp
 	rating         = models.BinaryField(null = True);
 
+	def __unicode__(self):
+		return unicode(self.netid)
+
 class Location(models.Model):
-	coordinate     = models.CharField(max_length = 50); # replace 50 with actual coordinate length, validate with regexp
+	coordinate     = models.CharField(max_length = 100); # replace 50 with actual coordinate length, validate with regexp
 	name           = models.CharField(max_length = 50, null = True);
 	address        = models.CharField(max_length = 100, null = True);
+
+	def __unicode__(self):
+		return unicode(self.name)
 
 class Ride(models.Model):
 	max_seats      = models.IntegerField();
@@ -19,15 +25,12 @@ class Ride(models.Model):
 	start_date     = models.DateField(null = True); 
 	start_time     = models.TimeField(null = True);
 	end            = models.OneToOneField(Location, related_name='end_of');
-	swath          = models.CommaSeparatedIntegerField(max_length = 100); # might want to tweak this but eh?
+	swath          = models.CharField(max_length = 1000); # might want to tweak this but eh?
 	payment        = models.IntegerField(null = True);
-	
-class Home(models.Model):
-	start = models.CharField(max_length = 50);
-	end = models.CharField(max_length = 50);
 
+	def __unicode__(self):
+		return unicode(self.swath)
 
 	#--------------PLACEHOLDER METHOD--------------------#
 	def generate_swath(self):
-		return [];
-	#----------------------------------------------------#s
+		return []
