@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from create_account.forms import UserForm, RideForm, HomeForm
 from create_account.models import Location
+from django.template import Context
 
 def user(request):
 	if request.method == 'POST': # If the form has been submitted...
@@ -66,4 +67,7 @@ def authenticate(request):
 	# netid = C.Authenticate()
 	netid = "peyser"
 	request.session["netid"] = netid
-	return render(request, '/home')
+	c = Context({'netid': netid})
+	return render(request, 'create_account/home.html', c)
+
+

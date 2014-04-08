@@ -66,7 +66,8 @@
 
       <div class="starter-template">
         <h1>PickMeUp</h1>
-        <p class="lead">I'm going...</p>
+        <p class="lead">Hi, {{netid}}!</p>
+        <p class="lead">Where are you going?</p>
 
         <form method="POST" action=""> {% csrf_token %}
           {{form.as_p}} 
