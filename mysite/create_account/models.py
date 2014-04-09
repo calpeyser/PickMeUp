@@ -12,7 +12,7 @@ class Location(models.Model):
 	coordinate     = models.CharField(max_length = 100); # replace 50 with actual coordinate length, validate with regexp
 	name           = models.CharField(max_length = 50, null = True);
 	address        = models.CharField(max_length = 100, null = True);
-
+	
 	def __unicode__(self):
 		return unicode(self.name)
 
@@ -34,3 +34,10 @@ class Ride(models.Model):
 	#--------------PLACEHOLDER METHOD--------------------#
 	def generate_swath(self):
 		return []
+		
+class Home(models.Model):
+	start = models.CharField(max_length = 50);
+	end = models.CharField(max_length = 50);
+	
+	def __unicode__(self):
+		return unicode('start')
