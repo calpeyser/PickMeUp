@@ -38,3 +38,7 @@ def ride(request):
         'form': ride_form,
     })
 
+def profile(request):
+	return render(request, 'create_account/profile.html')
+
+

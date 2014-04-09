@@ -10,5 +10,6 @@ urlpatterns = patterns('',
     # url(r'^blog/', include('blog.urls')),
 
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^create_ride/', 'create_account.views.ride')
+    url(r'^create_ride/', 'create_account.views.ride'),
+    url(r'^profile/', 'create_account.views.profile')
 )
