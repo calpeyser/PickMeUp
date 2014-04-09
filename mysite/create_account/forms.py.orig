@@ -19,8 +19,32 @@ class RideForm(forms.Form):
 	start_time = forms.TimeField();
 	payment = forms.IntegerField();
 
+
+"""class RideForm2(ModelForm):
+	class Meta:
+		model = Ride;
+		fields = ['max_seats', 'start_date', 'start_time'];"""
+
+
+<<<<<<< HEAD
 #Form class for the home page
 class HomeForm(ModelForm):
 	class Meta:
 		model = Home
 
+# Create the form class for rides
+class RideForm2(forms.Form):
+
+	#--------PLACEHOLDER LOCATIONS!!!!---------#
+	location1 = Location.objects.all()[0];
+	location2 = Location.objects.all()[1];
+	#------------------------------------------#
+	max_seats = forms.CharField(max_length = 100);
+	start_date = forms.CharField(max_length = 100);
+	end_date = forms.CharField(max_length = 100);
+	start = location1;
+	end = location2;
+=======
+
+
+>>>>>>> implemented create_ride page with placeholder locations
