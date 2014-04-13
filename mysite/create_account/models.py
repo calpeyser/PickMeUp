@@ -19,12 +19,12 @@ class Location(models.Model):
 class Ride(models.Model):
 	max_seats      = models.IntegerField();
 	open_seats     = models.CommaSeparatedIntegerField(max_length = 16); # ideally, the max length should be max_seats
-	driver         = models.OneToOneField(User, related_name='driver_of');
+	driver         = models.ForeignKey(User, related_name='driver_of'); # foreignkey = manyToOne
 	passengers     = models.ManyToManyField(User, related_name='passengers_of'); 
-	start          = models.OneToOneField(Location, related_name='start_of');
+	start          = models.ForeignKey(Location, related_name='start_of');
 	start_date     = models.DateField(null = True); 
 	start_time     = models.TimeField(null = True);
-	end            = models.OneToOneField(Location, related_name='end_of');
+	end            = models.ForeignKey(Location, related_name='end_of');
 	swath          = models.CharField(max_length = 1000); # might want to tweak this but eh?
 	payment        = models.IntegerField(null = True);
 

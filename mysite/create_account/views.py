@@ -2,7 +2,6 @@ from django.shortcuts import render, redirect
 from django.core import serializers
 from django.http import HttpResponseRedirect
 from create_account.forms import UserForm, RideForm, HomeForm
-from create_account.models import Location
 from create_account.models import User
 from create_account.models import Ride
 from create_account.models import Location
@@ -34,12 +33,24 @@ def user(request):
 def ride(request):
 	origin = request.session['start']
 	destination = request.session['end']
+
+	print origin;
+
+	startCoord = origin[0]
+	endCoord = destination[0]
+
+	print "startCoord: " + str(startCoord);
+	print "endCoord:   " + str(endCoord);
 	
-	origin = Location(coordinate = origin[0], name = "Test 1", address = "")
-	destination = Location(coordinate = destination[0], name = "Test 2", address = "")
-	
-	if origin.id == None:
+	origin = Location(coordinate = startCoord, name = "Test 1", address = "");
+	origin.save();
+	destination = Location(coordinate = endCoord, name = "Test 2", address = "");
+	destination.save();
+
+	if len(Location.objects.filter(coordinate=startCoord)) == 0:
+		##print len(Location.objects.filter(coordinate=startCoord))
 		Location.save(origin)
+	if len(Location.objects.filter(coordinate=endCoord)) == 0:
 		Location.save(destination)
 	
 	if request.method == 'POST': # If the form has been submitted...
@@ -48,6 +59,7 @@ def ride(request):
             # Process the data in form.cleaned_data - eventually populate this from what you get from the homepage
 			new_ride = Ride(max_seats = ride_form.cleaned_data['max_seats'], open_seats = ride_form.cleaned_data['open_seats'], driver = User.objects.all()[0], start = origin, start_date = ride_form.cleaned_data['start_date'], start_time = ride_form.cleaned_data['start_time'], end = destination, payment = ride_form.cleaned_data['payment']);
 			new_ride.save();
+			print "bound form"
 			return render(request, 'create_account/create_ride.html', {'form': ride_form,})
 			#return HttpResponseRedirect('/create_ride/') # Redirect after POST -- do we want this?
 	else:
@@ -58,6 +70,7 @@ def ride(request):
         'form': ride_form,
     })
     
+# homepage
 def home(request):
 	global ROOT
 	if request.method == 'POST':
@@ -69,15 +82,25 @@ def home(request):
 			request.session['start'] = start
 			request.session['end'] = end
 			
-			try:
-				request.POST['drive']
-			except NameError:
-				try:
-					request.POST['hitch']
-				except NameError:
-					raise Http404
-				return redirect('find_ride/')
-			return redirect(ROOT + 'create_ride/')
+			# This seems to work better than the below for directing to pages. ~Cal
+			option_drive = request.POST.get('drive', False);
+			option_hitch = request.POST.get('hitch', False);
+			if option_drive:
+				return redirect(ROOT + 'create_ride/');
+			elif option_hitch:
+				return redirect(ROOT + 'find_ride/');
+			else:
+				raise Http404;
+
+			#try:
+			#	request.POST['drive']
+			#except NameError:
+			#	try:
+			#		request.POST['hitch']
+			#	except NameError:
+			#		raise Http404
+			#	return redirect('find_ride/')
+			#return redirect(ROOT + 'create_ride/')
 	else:
 		home_form = HomeForm()
 	return render(request, 'create_account/home.html', {

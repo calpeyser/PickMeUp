@@ -48,7 +48,7 @@
         <h1>Going Someplace?</h1>
         <p class="lead">Let us know about where you're headed, and we'll help you find people to go with.</p>
 
-        <form method="POST" action="/create_ride/"> {% csrf_token %}
+        <form method="POST" action=""> {% csrf_token %}
           {{form.as_p}} 
           <input type="submit" value="Submit">
         </form>
