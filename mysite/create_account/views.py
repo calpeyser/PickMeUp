@@ -110,8 +110,19 @@ def home(request):
 # view to show all rides that match a query, hopefully?
 def show_rides(request):
 	# actually process request, for now hard-code
-	start = (40.3432, -74.6578)	# baker rink	
-	end = (40.4, -74.2)	# somewhere in NJ
+	start = request.session['start']
+	end = request.session['end']
+	
+	origin = Location.objects.filter(id=start)
+	destination = Location.objects.filter(id=end)
+	
+	#print "startCoord: " + str(startCoord);
+	#print "endCoord:   " + str(endCoord);
+	
+	if len(origin) > 1:
+		raise MultipleObjectsReturned
+	if len(destination) > 1:
+		raise MultipleObjectsReturned
 	query = Ride.objects.filter(start_date__gt=datetime.now()).values()
 	results = []
 	# make list of acceptable rides
@@ -126,9 +137,9 @@ def show_rides(request):
 			y1 = float(swat[i+1])
 			x2 = float(swat[i+2])
 			y2 = float(swat[i+3])
-			if x1 <= end[0] <= x2 and y1 <= end[1] <= y2:
+			if x1 <= destination[0] <= x2 and y1 <= destination[1] <= y2:
 				found_end = True
-			if x1 <= start[0] <= x2 and y1 <= start[1] <= y2:
+			if x1 <= origin[0] <= x2 and y1 <= origin[1] <= y2:
 				found_start = True
 			i += 4
 		if found_start and found_end:
@@ -136,10 +147,10 @@ def show_rides(request):
 			start_id = ride['start_id']
 			coord_obj = Location.objects.filter(pk=start_id).values()[0]
 			coordS = coord_obj['coordinate'].split(',')
-			x_dist_origin = abs(start[0] - float(coordS[0]))
-			y_dist_origin = abs(start[1] - float(coordS[1]))
-			x_dist_dest = abs(end[0] - float(coordS[0]))
-			y_dist_dest = abs(end[1] - float(coordS[1]))
+			x_dist_origin = abs(origin[0] - float(coordS[0]))
+			y_dist_origin = abs(origin[1] - float(coordS[1]))
+			x_dist_dest = abs(destination[0] - float(coordS[0]))
+			y_dist_dest = abs(destination[1] - float(coordS[1]))
 			origin_dist = x_dist_origin*x_dist_origin + y_dist_origin*y_dist_origin
 			dest_dist = x_dist_dest*x_dist_dest + y_dist_dest*y_dist_dest
 			if origin_dist <= dest_dist:
