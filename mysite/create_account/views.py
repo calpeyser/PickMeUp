@@ -31,26 +31,24 @@ def user(request):
 
 # view to show form to populate ride data
 def ride(request):
-	origin = request.session['start']
-	destination = request.session['end']
-
-	print origin;
-
-	startCoord = origin[0]
-	endCoord = destination[0]
-
-	print "startCoord: " + str(startCoord);
-	print "endCoord:   " + str(endCoord);
+	start = request.session['start']
+	end = request.session['end']
 	
-	origin = Location(coordinate = startCoord, name = "Test 1", address = "");
-	origin.save();
-	destination = Location(coordinate = endCoord, name = "Test 2", address = "");
-	destination.save();
+	origin = Location.objects.filter(id=start)
+	destination = Location.objects.filter(id=end)
+	
+	#print "startCoord: " + str(startCoord);
+	#print "endCoord:   " + str(endCoord);
+	
+	if len(origin) > 1:
+		raise MultipleObjectsReturned
+	if len(destination) > 1:
+		raise MultipleObjectsReturned
 
-	if len(Location.objects.filter(coordinate=startCoord)) == 0:
+	if len(origin[0].coordinate) == 0:
 		##print len(Location.objects.filter(coordinate=startCoord))
 		Location.save(origin)
-	if len(Location.objects.filter(coordinate=endCoord)) == 0:
+	if len(destination[0].coordinate) == 0:
 		Location.save(destination)
 	
 	if request.method == 'POST': # If the form has been submitted...
@@ -76,11 +74,13 @@ def home(request):
 	if request.method == 'POST':
 		home_form = HomeForm(request.POST)
 		if home_form.is_valid():
-			start = ['-40, 100', '', '']
-			end = ['20, 50', '', '']
+			origin = Location(coordinate = home_form.cleaned_data['start'], name = "Test 1", address = "");
+			origin.save();
+			destination = Location(coordinate = home_form.cleaned_data['end'], name = "Test 2", address = "");
+			destination.save();
 			
-			request.session['start'] = start
-			request.session['end'] = end
+			request.session['start'] = origin.id
+			request.session['end'] = destination.id
 			
 			# This seems to work better than the below for directing to pages. ~Cal
 			option_drive = request.POST.get('drive', False);

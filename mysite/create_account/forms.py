@@ -21,6 +21,7 @@ class RideForm(forms.Form):
 
 #Form class for the home page
 class HomeForm(ModelForm):
+
 	class Meta:
 		model = Home
 
