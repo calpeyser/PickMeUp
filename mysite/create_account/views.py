@@ -109,20 +109,24 @@ def home(request):
 
 # view to show all rides that match a query, hopefully?
 def show_rides(request):
-	# actually process request, for now hard-code
+	# actually process request
 	start = request.session['start']
 	end = request.session['end']
 	
-	origin = Location.objects.filter(id=start)
-	destination = Location.objects.filter(id=end)
-	
-	#print "startCoord: " + str(startCoord);
-	#print "endCoord:   " + str(endCoord);
-	
-	if len(origin) > 1:
+	originLoc = Location.objects.filter(id=start).values()
+	destinationLoc = Location.objects.filter(id=end).values()
+
+	if len(originLoc) > 1:
 		raise MultipleObjectsReturned
-	if len(destination) > 1:
+	if len(destinationLoc) > 1:
 		raise MultipleObjectsReturned
+	
+	originList = originLoc[0]['coordinate'].split(',')
+	destinationList = destinationLoc[0]['coordinate'].split(',')
+
+	origin = map(float, originList)
+	destination = map(float, destinationList)
+	
 	query = Ride.objects.filter(start_date__gt=datetime.now()).values()
 	results = []
 	# make list of acceptable rides
@@ -137,10 +141,28 @@ def show_rides(request):
 			y1 = float(swat[i+1])
 			x2 = float(swat[i+2])
 			y2 = float(swat[i+3])
+
+			# print x1
+			# print y1
+			# print x2
+			# print y2
+			# print "Test!"
+			# print origin[0]
+			# print origin[1]
+			# print destination[0]
+			# print destination[1]
+			# print "Test finished?"
+
+			# print x1 <= destination[0] <= x2
+			# print y1 <= destination[1] <= y2
+			# print "Really end test..."
+
 			if x1 <= destination[0] <= x2 and y1 <= destination[1] <= y2:
 				found_end = True
+				# print "Found end"
 			if x1 <= origin[0] <= x2 and y1 <= origin[1] <= y2:
 				found_start = True
+				# print "Found start"
 			i += 4
 		if found_start and found_end:
 			# find start and end of this ride:
