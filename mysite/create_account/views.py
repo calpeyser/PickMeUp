@@ -55,7 +55,7 @@ def ride(request):
 		ride_form = RideForm(request.POST)
 		if ride_form.is_valid():
             # Process the data in form.cleaned_data - eventually populate this from what you get from the homepage
-			new_ride = Ride(max_seats = ride_form.cleaned_data['max_seats'], open_seats = ride_form.cleaned_data['open_seats'], driver = User.objects.all()[0], start = origin, start_date = ride_form.cleaned_data['start_date'], start_time = ride_form.cleaned_data['start_time'], end = destination, payment = ride_form.cleaned_data['payment']);
+			new_ride = Ride(max_seats = ride_form.cleaned_data['max_seats'], open_seats = ride_form.cleaned_data['open_seats'], driver = User.objects.all()[0], start = origin[0], start_date = ride_form.cleaned_data['start_date'], start_time = ride_form.cleaned_data['start_time'], end = destination[0], payment = ride_form.cleaned_data['payment']);
 			new_ride.save();
 			print "bound form"
 			return render(request, 'create_account/create_ride.html', {'form': ride_form,})
