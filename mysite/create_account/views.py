@@ -74,9 +74,19 @@ def home(request):
 	if request.method == 'POST':
 		home_form = HomeForm(request.POST)
 		if home_form.is_valid():
-			origin = Location(coordinate = home_form.cleaned_data['start'], name = "Test 1", address = "");
+			origin = Location.objects.filter(coordinate=home_form.cleaned_data['start'])
+			destination = Location.objects.filter(coordinate=home_form.cleaned_data['end'])
+			
+			if len(origin) == 0:
+				origin = Location(coordinate = home_form.cleaned_data['start'], name = "Test 1", address = "");
+			else:
+				origin = origin[0];
+			if len(destination) == 0:
+				destination = Location(coordinate = home_form.cleaned_data['end'], name = "Test 2", address = "");
+			else:
+				destination = destination[0];
+	
 			origin.save();
-			destination = Location(coordinate = home_form.cleaned_data['end'], name = "Test 2", address = "");
 			destination.save();
 			
 			request.session['start'] = origin.id
@@ -115,9 +125,6 @@ def show_rides(request):
 	
 	origin = Location.objects.filter(id=start)
 	destination = Location.objects.filter(id=end)
-	
-	#print "startCoord: " + str(startCoord);
-	#print "endCoord:   " + str(endCoord);
 	
 	if len(origin) > 1:
 		raise MultipleObjectsReturned
