@@ -47,6 +47,8 @@ class Message(models.Model):
 	recipient      = models.ForeignKey(User, related_name='recipient_of');
 	title          = models.CharField(max_length = 500);
 	message        = models.CharField(max_length = 10000);
+	timestamp      = models.DateTimeField();
+	unread         = models.BooleanField(default=True);
 
 	def __unicode__(self):
 		return unicode('title');
