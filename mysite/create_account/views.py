@@ -205,7 +205,7 @@ def write_message(request):
 		message_form = MessageForm(request.POST)
 		if message_form.is_valid():
             # Process the data in form.cleaned_data - eventually populate this from what you get from the homepage
-			new_message = Message(sender = current_user, recipient = User.objects.filter(netid=message_form.cleaned_data['recipient'])[0], title = message_form.cleaned_data['title'], message = message_form.cleaned_data['message']); 
+			new_message = Message(sender = current_user, recipient = User.objects.filter(netid=message_form.cleaned_data['recipient'])[0], title = message_form.cleaned_data['title'], message = message_form.cleaned_data['message'], unread = True, timestamp = datetime.now()); 
 			new_message.save();
 			return render(request, 'create_account/write_message.html', {'form': message_form,})
 	else:
@@ -214,6 +214,19 @@ def write_message(request):
 	return render(request, 'create_account/write_message.html', {
         'form': message_form,
     })
+
+def delete_message(request):
+	if request.method == 'GET':
+		message_to_delete = Message.objects.filter(id=request.GET.get('id'));
+		message_to_delete.delete();
+
+	netid = request.session['netid'];
+	current_user = User.objects.filter(netid=netid)[0]; # assume unique netids
+
+	messages = Message.objects.filter(Q(sender=current_user)|Q(recipient=current_user));
+
+	return render(request, 'create_account/inbox.html', {'messages': messages});
+
 
 def inbox(request):
 	netid = request.session['netid'];

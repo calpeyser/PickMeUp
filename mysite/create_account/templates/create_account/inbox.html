@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Create A Ride</title>
+    <title>Inbox</title>
 
         <!-- Obtain Bootstrap style sheet from CDN (online service) so it doesn't have to be on my machine -->
   <!-- Check http://www.bootstrapcdn.com/ for latest version. -->
@@ -22,24 +22,86 @@
 
     <title>Create a Ride</title>
 
-    <!-- Bootstrap core CSS -->
-    <link href="../../dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- mostly taken from http://www.bootply.com/130410 -->
 
-    <!-- Custom styles for this template -->
-    <link href="starter-template.css" rel="stylesheet">
+<hr>
+<div class="container">
+  <div class="row">
+    <div class="row">
+      <div class="col-sm-3"><!--left col-->               
+          
+        </div><!--/col-3-->
+      <div class="col-sm-9">
+          
+          <ul class="nav nav-tabs" id="myTab">
+            <li class="active"><a href="#home" data-toggle="tab">Inbox</a></li>
+            <li><a href="#messages" data-toggle="tab">Sent</a></li>
+            <li><a href="#settings" data-toggle="tab">Trash</a></li>
+          </ul>
+              
+          <div class="tab-content">
+            <div class="tab-pane active" id="home">
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>Title</th>
+                      <th>Sender</th>
+                      <th>Timestamp</th>
+                    </tr>
+                  </thead>
+                  <tbody id="items">
+                    {%for message in messages%}
+                    <tr id="{{message.id}}" onclick="document.getElementById('email_display').value = '{{message.message}}'">
+                      <td>{{message.title}}</td>
+                      <td>{{message.sender}}</td>
+                      <td>{{message.timestamp}}</td>
+                      <td><button onclick="window.location.href='/delete_message/?id={{message.id}}'">Delete</button></td>
+                    </tr>
+                    {%endfor%}
+                  </tbody>
+                </table>
+                <hr>
+                <div class="row">
+                  <div class="col-md-4 col-md-offset-4 text-center">
+                    <ul class="pagination" id="myPager"></ul>
+                  </div>
+                </div>
+              </div><!--/table-resp-->
+              
+              <hr>
+              
+              
+             </div><!--/tab-pane-->
+             <div class="tab-pane" id="messages">
+               
+               <h2></h2>
+               
+               <ul class="list-group">
+                  <li class="list-group-item text-muted">Inbox</li>
+                  <li class="list-group-item text-right"><a href="#" class="pull-left">Here is your a link to the latest summary report from the..</a> 2.13.2014</li>
+                  <li class="list-group-item text-right"><a href="#" class="pull-left">Hi Joe, There has been a request on your account since that was..</a> 2.11.2014</li>
+                  <li class="list-group-item text-right"><a href="#" class="pull-left">Nullam sapien massaortor. A lobortis vitae, condimentum justo...</a> 2.11.2014</li>
+                  <li class="list-group-item text-right"><a href="#" class="pull-left">Thllam sapien massaortor. A lobortis vitae, condimentum justo...</a> 2.11.2014</li>
+                  <li class="list-group-item text-right"><a href="#" class="pull-left">Wesm sapien massaortor. A lobortis vitae, condimentum justo...</a> 2.11.2014</li>
+                  <li class="list-group-item text-right"><a href="#" class="pull-left">For therepien massaortor. A lobortis vitae, condimentum justo...</a> 2.11.2014</li>
+                  <li class="list-group-item text-right"><a href="#" class="pull-left">Also we, havesapien massaortor. A lobortis vitae, condimentum justo...</a> 2.11.2014</li>
+                  <li class="list-group-item text-right"><a href="#" class="pull-left">Swedish chef is assaortor. A lobortis vitae, condimentum justo...</a> 2.11.2014</li>
+                  
+                </ul> 
+                              
+              </div><!--/tab-pane-->
+              <div>
+                <textarea rows="20" cols="100" id="email_display">
+                </textarea> 
+                <br>
+                <br>
+              </div>
 
-    <div class="container">
-      <h1>Inbox</h1>
-      <ul>
-      {% for message in messages %}
-        <li><h2>{{message.title}}</h2>
-          <p>{{message.message}}</p></li>
-      {% endfor %}
-      </ul>
-    </div>
+          </div><!--/tab-content-->
 
-
-
+        </div><!--/col-9-->
+    </div><!--/row-->
 
 
     <!-- Bootstrap core JavaScript
