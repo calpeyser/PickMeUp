@@ -30,10 +30,6 @@ class Ride(models.Model):
 
 	def __unicode__(self):
 		return unicode(self.swath)
-
-	#--------------PLACEHOLDER METHOD--------------------#
-	def generate_swath(self):
-		return []
 		
 class Home(models.Model):
 	start = models.CharField(max_length = 50);

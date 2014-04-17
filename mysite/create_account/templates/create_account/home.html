@@ -2,6 +2,10 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <!-- Load Google Maps API --> 
+    <script type="text/javascript"
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBJAwkd0cOH9KcWXKyhK-TKvkCtmdm7SJk&sensor=false">
+    </script>
     <title>PickMeUp</title>
 
         <!-- Obtain Bootstrap style sheet from CDN (online service) so it doesn't have to be on my machine -->
@@ -70,7 +74,7 @@
 
         <form method="POST" action=""> {% csrf_token %}
           {{form.as_p}} 
-          <input type="submit" name="drive" value="I'm driving.">
+          <input type="submit" name="drive" value="I'm driving." onclick="swathing()">
           <input type="submit" name="hitch" value="I'm looking for a ride.">
         </form>
       </div>
@@ -83,6 +87,67 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <script src="../../dist/js/bootstrap.min.js"></script>
+
+        <!-- JavaScript for Swathing -->
+    <script type="text/javascript" src="http://google-maps-utility-library-v3.googlecode.com/svn/trunk/routeboxer/src/RouteBoxer.js"></script>
+    <script>
+
+    // this was borrowed from here: http://stackoverflow.com/questions/133925/javascript-post-request-like-a-form-submit
+    function post_to_url(path, params, method) {
+        method = method || "post"; 
+        // The rest of this code assumes you are not using a library.
+        // It can be made less wordy if you use one.
+        var form = document.createElement("form");
+        form.setAttribute("method", method);
+        form.setAttribute("action", path);
+
+        for(var key in params) {
+            if(params.hasOwnProperty(key)) {
+                var hiddenField = document.createElement("input");
+                hiddenField.setAttribute("type", "hidden");
+                hiddenField.setAttribute("name", key);
+                hiddenField.setAttribute("value", params[key]);
+
+                form.appendChild(hiddenField);
+             }
+        }
+
+        document.body.appendChild(form);
+        form.submit();
+    }
+
+    function swathing() {
+      console.log("I found a script! ");
+      var directionService = new google.maps.DirectionsService();
+      var rboxer = new RouteBoxer();
+      var distance = 20; // km
+      var start = "{{start}}";
+      var end = "{{end}}";
+      var request = {
+        origin: start,
+        destination: end,
+        travelMode: google.maps.TravelMode.DRIVING
+      };
+      console.log(rboxer);
+      var swath = "";
+      directionService.route(request, function(result, status) {
+        console.log(request);
+        if (status == google.maps.DirectionsStatus.OK) {
+          // Box the overview path of the first route
+          var path = result.routes[0].overview_path;
+          console.log(distance);
+          var boxes = rboxer.box(path, distance);
+          
+          for (var i = 0; i < boxes.length; i++) {
+            var bounds = boxes[i];
+            swath = swath + bounds.toString();
+          }
+        }
+        post_to_url('/create_ride/', {'startLoc': start, 'endLoc': end, 'swaths': swath, csrfmiddlewaretoken: '{{ csrf_token }}' });
+      });
+      console.log("Hey, I'm done!");
+    }
+</script>
   </body>
 </html>
 

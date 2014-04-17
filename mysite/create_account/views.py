@@ -31,9 +31,17 @@ def user(request):
 
 # view to show form to populate ride data
 def ride(request):
-	start = request.session['start']
-	end = request.session['end']
-	
+	start = request.POST.get('startLoc', False)
+	end = request.POST.get('endLoc', False)
+	swath = request.POST.get('swaths', False)
+
+	if not start:
+		print "No start!"
+	if not end:
+		print "No end!"
+	if not swath:
+		print "No swath!"
+
 	origin = Location.objects.filter(id=start)
 	destination = Location.objects.filter(id=end)
 	
@@ -45,17 +53,24 @@ def ride(request):
 	if len(destination) > 1:
 		raise MultipleObjectsReturned
 
-	if len(origin[0].coordinate) == 0:
+	if len(origin) == 0:
 		##print len(Location.objects.filter(coordinate=startCoord))
 		Location.save(origin)
-	if len(destination[0].coordinate) == 0:
+	if len(destination) == 0:
 		Location.save(destination)
 	
 	if request.method == 'POST': # If the form has been submitted...
 		ride_form = RideForm(request.POST)
 		if ride_form.is_valid():
             # Process the data in form.cleaned_data - eventually populate this from what you get from the homepage
-			new_ride = Ride(max_seats = ride_form.cleaned_data['max_seats'], open_seats = ride_form.cleaned_data['open_seats'], driver = User.objects.filter(netid=request.session['netid'])[0], start = origin[0], start_date = ride_form.cleaned_data['start_date'], start_time = ride_form.cleaned_data['start_time'], end = destination[0], payment = ride_form.cleaned_data['payment'], swath = (origin.values()[0]['coordinate'] + ' , ' + destination.values()[0]['coordinate']));
+			new_ride = Ride(max_seats = ride_form.cleaned_data['max_seats'], 
+				open_seats = ride_form.cleaned_data['open_seats'], 
+				driver = User.objects.filter(netid=request.session['netid'])[0], 
+				start = origin[0], start_date = ride_form.cleaned_data['start_date'], 
+				start_time = ride_form.cleaned_data['start_time'], 
+				end = destination[0], 
+				payment = ride_form.cleaned_data['payment'], 
+				swath = swath);
 			new_ride.save();
 			print "bound form"
 			return render(request, 'create_account/create_ride.html', {'form': ride_form,})
@@ -63,9 +78,11 @@ def ride(request):
 	else:
 		ride_form = RideForm() # An unbound form
 
-	# put the actual html here, probably?
+	# pass form to HTML, pass start and end for javasript to use
 	return render(request, 'create_account/create_ride.html', {
         'form': ride_form,
+        'start': origin[0].coordinate,
+        'end': destination[0].coordinate,
     })
     
 # homepage
@@ -97,6 +114,11 @@ def home(request):
 			option_hitch = request.POST.get('hitch', False);
 			if option_drive:
 				return redirect(ROOT + 'create_ride/');
+				# return render(request, 'create_account/home.html', {
+				# 	'form': home_form,
+				# 	'start': origin.coordinate,
+				# 	'end': destination.coordinate,
+				# })
 			elif option_hitch:
 				return redirect(ROOT + 'find_ride/');
 			else:
@@ -193,7 +215,7 @@ def show_rides(request):
 		start_obj = Location.objects.filter(pk=start_id).values()[0]
 		end_id = item['end_id']
 		end_obj = Location.objects.filter(pk=end_id).values()[0]
-		result_list.append((start_obj['name'], end_obj['name']))
+		result_list.append(start_obj['coordinate'])
 	C = Context({'list': result_list})
 	return render(request, 'create_account/searchrides.html',
 		C)
@@ -201,8 +223,7 @@ def show_rides(request):
 def authenticate(request):
 	# C = CASClient.CASClient()
 	# netid = C.Authenticate()
-	netid = "valya"
-
+	netid = "daniel"
 	# add user to DB if not added before
 	test = User.objects.filter(netid=netid)
 	if len(test) == 0:
