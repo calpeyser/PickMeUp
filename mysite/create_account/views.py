@@ -202,6 +202,13 @@ def authenticate(request):
 	# C = CASClient.CASClient()
 	# netid = C.Authenticate()
 	netid = "valya"
+
+	# add user to DB if not added before
+	test = User.objects.filter(netid=netid)
+	if len(test) == 0:
+		# for now, add default phone number
+		user = User(netid=netid, phone_number="609-555-5555")
+		user.save()
 	request.session["netid"] = netid
 	return redirect('home/')
 
