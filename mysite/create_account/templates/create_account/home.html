@@ -41,9 +41,126 @@
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+	 <link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500">
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places"></script>
+    <script>
+// This example displays an address form, using the autocomplete feature
+// of the Google Places API to help users fill in the information.
+
+var placeSearch, autocomplete;
+var componentForm = {
+  street_number: 'short_name',
+  route: 'long_name',
+  locality: 'long_name',
+  administrative_area_level_1: 'short_name',
+  country: 'long_name',
+  postal_code: 'short_name'
+};
+
+function initialize() {
+  // Create the autocomplete object, restricting the search
+  // to geographical location types.
+  autocomplete1 = new google.maps.places.Autocomplete(
+      /** @type {HTMLInputElement} */(document.getElementById('autocomplete1')),
+      { types: ['geocode'] });
+  // When the user selects an address from the dropdown,
+  // populate the address fields in the form.
+  google.maps.event.addListener(autocomplete1, 'place_changed', function() {
+    fillInAddressStart();
+  });
+  autocomplete2 = new google.maps.places.Autocomplete(
+      /** @type {HTMLInputElement} */(document.getElementById('autocomplete2')),
+      { types: ['geocode'] });
+  // When the user selects an address from the dropdown,
+  // populate the address fields in the form.
+  google.maps.event.addListener(autocomplete2, 'place_changed', function() {
+    fillInAddressEnd();
+  });
+}
+
+// [START region_fillform]
+function fillInAddressStart() {
+  // Get the place details from the autocomplete object.
+  var place = autocomplete1.getPlace();
+  document.getElementById('id_start').value = place.geometry.location['k'].toString().concat(', ').concat(place.geometry.location['A'].toString())
+  document.getElementById('id_startname').value = place.formatted_address
+}
+
+function fillInAddressEnd() {
+  // Get the place details from the autocomplete object.
+  var place = autocomplete2.getPlace();
+  
+  document.getElementById('id_end').value = place.geometry.location['k'].toString().concat(', ').concat(place.geometry.location['A'].toString())
+  document.getElementById('id_endname').value = place.formatted_address
+}
+// [END region_fillform]
+
+// [START region_geolocation]
+// Bias the autocomplete object to the user's geographical location,
+// as supplied by the browser's 'navigator.geolocation' object.
+function geolocate() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(position) {
+      var geolocation = new google.maps.LatLng(
+          position.coords.latitude, position.coords.longitude);
+      autocomplete.setBounds(new google.maps.LatLngBounds(geolocation,
+          geolocation));
+    });
+  }
+}
+// [END region_geolocation]
+
+    </script>
+
+    <style>
+      #locationField, #controls {
+        position: relative;
+        width: 480px;
+      }
+      #autocomplete1 {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        width: 99%;
+      }
+      #autocomplete2 {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        width: 99%;
+      }
+      .label {
+        text-align: right;
+        font-weight: bold;
+        width: 100px;
+        color: #303030;
+      }
+      #address {
+        border: 1px solid #000090;
+        background-color: #f0f0ff;
+        width: 480px;
+        padding-right: 2px;
+      }
+      #address td {
+        font-size: 10pt;
+      }
+      .field {
+        width: 99%;
+      }
+      .slimField {
+        width: 80px;
+      }
+      .wideField {
+        width: 200px;
+      }
+      #locationField {
+        height: 20px;
+        margin-bottom: 2px;
+      }
+    </style>
   </head>
 
-  <body>
+  <body onload="initialize()">
 
     <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
       <div class="container">
@@ -73,7 +190,15 @@
         <p class="lead">I'm going...</p>
 
         <form method="POST" action=""> {% csrf_token %}
-          {{form.as_p}} 
+        <div id="locationField">
+  		    <input id="autocomplete1" placeholder="From"
+             onFocus="geolocate()" type="text"></input>
+ 		</div>
+ 		<div id="locationField">
+  		    <input id="autocomplete2" placeholder="To"
+             onFocus="geolocate()" type="text"></input>
+ 		</div>
+ 		  {{ form.as_p }}
           <input type="submit" name="drive" value="I'm driving.">
           <input type="submit" name="hitch" value="I'm looking for a ride.">
         </form>

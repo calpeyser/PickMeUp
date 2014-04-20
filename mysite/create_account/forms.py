@@ -21,6 +21,10 @@ class RideForm(forms.Form):
 
 #Form class for the home page
 class HomeForm(ModelForm):
+	start = forms.CharField(widget = forms.HiddenInput())
+	end = forms.CharField(widget = forms.HiddenInput())
+	startname = forms.CharField(widget = forms.HiddenInput())
+	endname = forms.CharField(widget = forms.HiddenInput())
 
 	class Meta:
 		model = Home
