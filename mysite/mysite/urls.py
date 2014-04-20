@@ -15,5 +15,5 @@ urlpatterns = patterns('',
     url(r'^home/', 'create_account.views.home'),
     url(r'^$', 'create_account.views.authenticate'),
 	url(r'^create_ride/', 'create_account.views.ride'),
-	url(r'^find_ride/', 'create_account.views.show_rides')
+	url(r'^find_ride/', 'create_account.views.show_rides'),
 )

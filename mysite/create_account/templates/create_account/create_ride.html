@@ -49,7 +49,10 @@
         <p class="lead">Let us know about where you're headed, and we'll help you find people to go with.</p>
 
         <form method="POST" action=""> {% csrf_token %}
-          {{form.as_p}} 
+          {{form.as_p}}
+          <input type="hidden" name="startLoc" value="{{startLoc}}" />
+          <input type="hidden" name="endLoc" value="{{endLoc}}" />
+          <input type="hidden" name="swaths" value="{{swaths}}" />
           <input type="submit" value="Submit">
         </form>
       </div>

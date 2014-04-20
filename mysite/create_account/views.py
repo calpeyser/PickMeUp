@@ -31,35 +31,19 @@ def user(request):
 
 # view to show form to populate ride data
 def ride(request):
-	start = request.POST.get('startLoc', False)
-	end = request.POST.get('endLoc', False)
-	swath = request.POST.get('swaths', False)
-
-	if not start:
-		print "No start!"
-	if not end:
-		print "No end!"
-	if not swath:
-		print "No swath!"
-
-	origin = Location.objects.filter(id=start)
-	destination = Location.objects.filter(id=end)
-	
-	#print "startCoord: " + str(startCoord);
-	#print "endCoord:   " + str(endCoord);
-	
-	if len(origin) > 1:
-		raise MultipleObjectsReturned
-	if len(destination) > 1:
-		raise MultipleObjectsReturned
-
-	if len(origin) == 0:
-		##print len(Location.objects.filter(coordinate=startCoord))
-		Location.save(origin)
-	if len(destination) == 0:
-		Location.save(destination)
-	
 	if request.method == 'POST': # If the form has been submitted...
+		start = request.POST.get('startLoc', False)
+		end = request.POST.get('endLoc', False)
+		swath = request.POST.get('swaths', False)
+
+		origin = Location.objects.filter(coordinate=start)
+		destination = Location.objects.filter(coordinate=end)
+	
+		if len(origin) > 1:
+			raise MultipleObjectsReturned
+		if len(destination) > 1:
+			raise MultipleObjectsReturned
+
 		ride_form = RideForm(request.POST)
 		if ride_form.is_valid():
             # Process the data in form.cleaned_data - eventually populate this from what you get from the homepage
@@ -73,17 +57,22 @@ def ride(request):
 				swath = swath);
 			new_ride.save();
 			print "bound form"
-			return render(request, 'create_account/create_ride.html', {'form': ride_form,})
+			return render(request, 'create_account/create_ride.html', {
+				'form': ride_form,
+				'startLoc': start,
+				'endLoc': end,
+				'swaths': swath, 
+			})
 			#return HttpResponseRedirect('/create_ride/') # Redirect after POST -- do we want this?
 	else:
 		ride_form = RideForm() # An unbound form
-
-	# pass form to HTML, pass start and end for javasript to use
+	# pass form to HTML
 	return render(request, 'create_account/create_ride.html', {
         'form': ride_form,
-        'start': origin[0].coordinate,
-        'end': destination[0].coordinate,
-    })
+		'startLoc': str(start),
+		'endLoc': str(end),
+		'swaths': str(swath),
+	})
     
 # homepage
 def home(request):
@@ -109,30 +98,17 @@ def home(request):
 			request.session['start'] = origin.id
 			request.session['end'] = destination.id
 			
-			# This seems to work better than the below for directing to pages. ~Cal
 			option_drive = request.POST.get('drive', False);
 			option_hitch = request.POST.get('hitch', False);
 			if option_drive:
-				return redirect(ROOT + 'create_ride/');
-				# return render(request, 'create_account/home.html', {
-				# 	'form': home_form,
-				# 	'start': origin.coordinate,
-				# 	'end': destination.coordinate,
-				# })
+				return render(request, 'create_account/waiting.html', {
+					'start': origin.coordinate,
+					'end': destination.coordinate,
+				})
 			elif option_hitch:
 				return redirect(ROOT + 'find_ride/');
 			else:
 				raise Http404;
-
-			#try:
-			#	request.POST['drive']
-			#except NameError:
-			#	try:
-			#		request.POST['hitch']
-			#	except NameError:
-			#		raise Http404
-			#	return redirect('find_ride/')
-			#return redirect(ROOT + 'create_ride/')
 	else:
 		home_form = HomeForm()
 	return render(request, 'create_account/home.html', {
@@ -166,7 +142,7 @@ def show_rides(request):
 		i = 0
 		found_start = False
 		found_end = False
-		# if we dont' have reasonable swaths, then match by radius from dest.
+		# TODO: if we dont' have reasonable swaths, then match by radius from dest.
 		swat = ride['swath'].split(',')
 		while (i in range(len(swat)) and (not found_end or not found_start)):
 			x1 = float(swat[i])
@@ -215,7 +191,8 @@ def show_rides(request):
 		start_obj = Location.objects.filter(pk=start_id).values()[0]
 		end_id = item['end_id']
 		end_obj = Location.objects.filter(pk=end_id).values()[0]
-		result_list.append(start_obj['coordinate'])
+		res = "Ride from " + str(start_obj) + " and going to " + str(end_obj)
+		result_list.append(res)
 	C = Context({'list': result_list})
 	return render(request, 'create_account/searchrides.html',
 		C)
