@@ -38,22 +38,20 @@ class Home(models.Model):
 	def __unicode__(self):
 		return unicode('start')
 
+class Conversation(models.Model):
+	participants  = models.ManyToManyField(User, related_name='participants_of');
+	title         = models.CharField(max_length = 500);
+
 class Message(models.Model):
 	sender         = models.ForeignKey(User, related_name='sender_of');
-	recipient      = models.ForeignKey(User, related_name='recipient_of');
+	recipients     = models.ManyToManyField(User, related_name='recipients_of');
 	title          = models.CharField(max_length = 500);
 	message        = models.CharField(max_length = 10000);
 	timestamp      = models.DateTimeField();
 	unread         = models.BooleanField(default=True);
+	conversation   = models.ForeignKey(Conversation, related_name='conversation_of');
 
 	def __unicode__(self):
-		return unicode('title');
+		return unicode(self.title);
 
-class Conversation(models.Model):
-	initiator     = models.ForeignKey(User, related_name='initiator_of');
-	responder     = models.ForeignKey(User, related_name='responder-of');
-	messages      = models.ManyToManyField(Message, related_name='messages_of');
-
-	def __unicode__(self):
-		return "Conversation between " + unicode('initiator') + " and " + unicode('responder');
 

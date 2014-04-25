@@ -204,9 +204,20 @@ def write_message(request):
 	if request.method == 'POST': # If the form has been submitted...
 		message_form = MessageForm(request.POST)
 		if message_form.is_valid():
-            # Process the data in form.cleaned_data - eventually populate this from what you get from the homepage
-			new_message = Message(sender = current_user, recipient = User.objects.filter(netid=message_form.cleaned_data['recipient'])[0], title = message_form.cleaned_data['title'], message = message_form.cleaned_data['message'], unread = True, timestamp = datetime.now()); 
+			# if this is a not a new conversation, this goes to the given conversation
+			if request.method == 'GET':
+				this_conversation = Conversation.objects.filter(id=request.GET.get('id'));
+				this_participants = this_conversation.participants;
+			else:
+				this_conversation = Conversation(title=message_form.cleaned_data['title']);
+				this_conversation.save();
+				this_participants = message_form.cleaned_data['recipients'];
+				for u in this_participants:
+					this_conversation.participants.add(u);
+			new_message = Message(sender = current_user, title = message_form.cleaned_data['title'], message = message_form.cleaned_data['message'], unread = True, timestamp = datetime.now(), conversation = this_conversation); 
 			new_message.save();
+			for u in this_participants:
+				new_message.recipients.add(u);
 			return render(request, 'create_account/write_message.html', {'form': message_form,})
 	else:
 		message_form = MessageForm() # An unbound form
@@ -232,9 +243,28 @@ def inbox(request):
 	netid = request.session['netid'];
 	current_user = User.objects.filter(netid=netid)[0]; # assume unique netids
 
-	messages = Message.objects.filter(Q(sender=current_user)|Q(recipient=current_user));
+	# get conversations that involve the user.  Map those conversations to their first messages
+	conversations_recieved = [];
+	conversations_first_messages = [];
 
-	return render(request, 'create_account/inbox.html', {'messages': messages});
+	for c in Conversation.objects.all():
+		if current_user in c.participants.all():
+			messages = Message.objects.filter(conversation=c);
+			messages = messages.order_by('timestamp');
+			conversations_recieved.append((c));
+
+
+
+	return render(request, 'create_account/inbox.html', {'conversations_recieved': conversations_recieved, 'first_messages': conversations_first_messages});
+
+def sent(request):
+	netid             = request.session['netid'];
+	current_user      = User.objects.filter(netid=netid)[0]; # assume unique netids
+
+	messages_sent     = Message.objects.filter(sender=current_user);
+
+	return render(request, 'create_account/sent.html', {'messages_sent': messages_sent});
+
 
 def authenticate(request):
 	# C = CASClient.CASClient()

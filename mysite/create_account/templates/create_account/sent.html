@@ -34,8 +34,8 @@
       <div class="col-sm-9">
           
           <ul class="nav nav-tabs" id="myTab">
-            <li class="active"><a href="" data-toggle="tab">Inbox</a></li>
-            <li><a href="/sent" data-toggle="tab">Sent</a></li>
+            <li><a href="/inbox" data-toggle="tab">Inbox</a></li>
+            <li class="active"><a href="" data-toggle="tab">Sent</a></li>
           </ul>
               
           <div class="tab-content">
@@ -50,16 +50,11 @@
                     </tr>
                   </thead>
                   <tbody id="items">
-                    {%for conversation in conversations_recieved%}
-                    <tr id="{{message.id}}" onclick="display_conversation()">
-                      <script>
-                        var this_conversation = "{{conversation}}";
-                      </script>
-                      <td>{{conversation.title}}</td>
-                      <td>{{conversation}}</td>
+                    {%for message in messages_sent%}
+                    <tr id="{{message.id}}" onclick="document.getElementById('email_display').value = '{{message.message}}'">
+                      <td>{{message.title}}</td>
+                      <td>{{message.sender}}</td>
                       <td>{{message.timestamp}}</td>
-                      <td><button onclick="window.location.href='/write_message/?id={{conversation.id}}'">Reply</td>
-                      <td><button onclick="">Reply All</td>
                       <td><button onclick="window.location.href='/delete_message/?id={{message.id}}'">Delete</button></td>
                     </tr>
                     {%endfor%}
@@ -90,13 +85,6 @@
 
         </div><!--/col-9-->
     </div><!--/row-->
-
-    <script>
-      function display_conversation() {
-        var to_display = new String("");
-        alert(this_conversation);
-      }
-    </script>
 
 
     <!-- Bootstrap core JavaScript

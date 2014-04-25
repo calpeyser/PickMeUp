@@ -1,0 +1,47 @@
+html {
+  height: 100%;
+}
+ 
+body {
+  height: 100%;
+  background: #555;
+}
+ 
+div#wrapper {
+  position: relative;
+  min-height: 100%;
+}
+ 
+.navbar {
+  height: 70px;
+}
+ 
+.navbar-inner {
+  background: #2c2c2c;
+  border: 0px;
+  border-radius: 0px;
+  box-shadow: none;
+}
+ 
+.container {
+  margin-left: 10px;
+}
+ 
+#sidebar {
+  background-color: #2C2C2C;
+  margin-left: 0px;
+  position: absolute;
+  top: 70px;
+  bottom: 0px;
+  min-height: 100%;
+}
+ 
+#sidebar > .nav > .nav-menu > a {
+  border: 0px;
+  border-radius: 0px;
+  padding: 20px;
+}
+ 
+#main {
+  float: right;
+}
