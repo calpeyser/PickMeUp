@@ -37,3 +37,21 @@ class Home(models.Model):
 	
 	def __unicode__(self):
 		return unicode('start')
+
+class Message(models.Model):
+	sender         = models.ForeignKey(User, related_name='sender_of');
+	recipient      = models.ForeignKey(User, related_name='recipient_of');
+	title          = models.CharField(max_length = 500);
+	message        = models.CharField(max_length = 10000);
+
+	def __unicode__(self):
+		return unicode('title');
+
+class Conversation(models.Model):
+	initiator     = models.ForeignKey(User, related_name='initiator_of');
+	responder     = models.ForeignKey(User, related_name='responder-of');
+	messages      = models.ManyToManyField(Message, related_name='messages_of');
+
+	def __unicode__(self):
+		return "Conversation between " + unicode('initiator') + " and " + unicode('responder');
+

@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect
 from django.core import serializers
 from django.http import HttpResponseRedirect
-from create_account.forms import UserForm, RideForm, HomeForm
-from create_account.models import User
-from create_account.models import Ride
-from create_account.models import Location
+from django.db.models import Q
+from create_account.forms import UserForm, RideForm, HomeForm, MessageForm
+from create_account.models import User, Location, Ride, Message, Conversation
+
+
 import datetime
 from datetime import datetime
 from django.template import Context
@@ -56,7 +57,6 @@ def ride(request):
 				payment = ride_form.cleaned_data['payment'], 
 				swath = swath);
 			new_ride.save();
-			print "bound form"
 			return render(request, 'create_account/create_ride.html', {
 				'form': ride_form,
 				'startLoc': start,
@@ -196,6 +196,32 @@ def show_rides(request):
 	C = Context({'list': result_list})
 	return render(request, 'create_account/searchrides.html',
 		C)
+
+def write_message(request):
+	netid = request.session['netid'];
+	current_user = User.objects.filter(netid=netid)[0]; # assume unique netids
+
+	if request.method == 'POST': # If the form has been submitted...
+		message_form = MessageForm(request.POST)
+		if message_form.is_valid():
+            # Process the data in form.cleaned_data - eventually populate this from what you get from the homepage
+			new_message = Message(sender = current_user, recipient = User.objects.filter(netid=message_form.cleaned_data['recipient'])[0], title = message_form.cleaned_data['title'], message = message_form.cleaned_data['message']); 
+			new_message.save();
+			return render(request, 'create_account/write_message.html', {'form': message_form,})
+	else:
+		message_form = MessageForm() # An unbound form
+
+	return render(request, 'create_account/write_message.html', {
+        'form': message_form,
+    })
+
+def inbox(request):
+	netid = request.session['netid'];
+	current_user = User.objects.filter(netid=netid)[0]; # assume unique netids
+
+	messages = Message.objects.filter(Q(sender=current_user)|Q(recipient=current_user));
+
+	return render(request, 'create_account/inbox.html', {'messages': messages});
 
 def authenticate(request):
 	# C = CASClient.CASClient()

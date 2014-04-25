@@ -16,4 +16,6 @@ urlpatterns = patterns('',
     url(r'^$', 'create_account.views.authenticate'),
 	url(r'^create_ride/', 'create_account.views.ride'),
 	url(r'^find_ride/', 'create_account.views.show_rides'),
+	url(r'^inbox/', 'create_account.views.inbox'),
+	url(r'^write_message/', 'create_account.views.write_message')
 )
