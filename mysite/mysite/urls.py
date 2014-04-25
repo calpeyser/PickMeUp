@@ -18,5 +18,6 @@ urlpatterns = patterns('',
 	url(r'^find_ride/', 'create_account.views.show_rides'),
 	url(r'^inbox/', 'create_account.views.inbox'),
 	url(r'^write_message/', 'create_account.views.write_message'),
-	url(r'^delete_message/', 'create_account.views.delete_message')
+	url(r'^delete_message/', 'create_account.views.delete_message'),
+    url(r'^sent', 'create_account.views.sent')
 )

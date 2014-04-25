@@ -24,6 +24,6 @@ class HomeForm(ModelForm):
 		model = Home
 
 class MessageForm(forms.Form):
-	recipient = forms.CharField();
+	recipients = forms.ModelMultipleChoiceField(queryset=User.objects.all());
 	title = forms.CharField();
 	message = forms.CharField();
