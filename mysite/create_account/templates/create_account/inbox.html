@@ -50,13 +50,13 @@
                     </tr>
                   </thead>
                   <tbody id="items">
-                    {%for conversation in conversations_recieved%}
-                    <tr id="{{message.id}}" onclick="display_conversation()">
-                      <script>
-                        var this_conversation = "{{conversation}}";
-                      </script>
-                      <td>{{conversation.title}}</td>
-                      <td>{{conversation}}</td>
+                    {%for message in messages_recieved%}
+                    <script>
+                      var message_string = new String('{{message.message}}');
+                    </script>
+                    <tr id="{{message.id}}" onclick="document.getElementById('email_display').value = message_string">
+                      <td>{{message.title}}</td>
+                      <td>{{message.sender}}</td>
                       <td>{{message.timestamp}}</td>
                       <td><button onclick="window.location.href='/write_message/?id={{conversation.id}}'">Reply</td>
                       <td><button onclick="">Reply All</td>
@@ -91,12 +91,6 @@
         </div><!--/col-9-->
     </div><!--/row-->
 
-    <script>
-      function display_conversation() {
-        var to_display = new String("");
-        alert(this_conversation);
-      }
-    </script>
 
 
     <!-- Bootstrap core JavaScript
