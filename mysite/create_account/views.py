@@ -12,7 +12,7 @@ from django.template import Context
 
 
 global ROOT 
-ROOT = 'http://127.0.0.1:8000/'
+ROOT = 'http://carshare.tigerapps.org/'
 
 # view to show form to populate user data
 def user(request):
@@ -26,7 +26,7 @@ def user(request):
 		user_form = UserForm() # An unbound form
 
 	# put the actual html here, probably?
-	return render(request, 'create_account/create_ride.html', {
+	return render(request, 'create_account/create_ride.html/', {
         'form': user_form,
     })
 
@@ -57,7 +57,7 @@ def ride(request):
 				payment = ride_form.cleaned_data['payment'], 
 				swath = swath);
 			new_ride.save();
-			return render(request, 'create_account/create_ride.html', {
+			return render(request, 'create_account/create_ride.html/', {
 				'form': ride_form,
 				'startLoc': start,
 				'endLoc': end,
@@ -67,7 +67,7 @@ def ride(request):
 	else:
 		ride_form = RideForm() # An unbound form
 	# pass form to HTML
-	return render(request, 'create_account/create_ride.html', {
+	return render(request, 'create_account/create_ride.html/', {
         'form': ride_form,
 		'startLoc': str(start),
 		'endLoc': str(end),
@@ -101,7 +101,7 @@ def home(request):
 			option_drive = request.POST.get('drive', False);
 			option_hitch = request.POST.get('hitch', False);
 			if option_drive:
-				return render(request, 'create_account/waiting.html', {
+				return render(request, 'create_account/waiting.html/', {
 					'start': origin.coordinate,
 					'end': destination.coordinate,
 				})
@@ -111,7 +111,7 @@ def home(request):
 				raise Http404;
 	else:
 		home_form = HomeForm()
-	return render(request, 'create_account/home.html', {
+	return render(request, 'create_account/home.html/', {
 		'form': home_form,
 	})
 
@@ -194,7 +194,7 @@ def show_rides(request):
 		res = "Ride from " + str(start_obj) + " and going to " + str(end_obj)
 		result_list.append(res)
 	C = Context({'list': result_list})
-	return render(request, 'create_account/searchrides.html',
+	return render(request, 'create_account/searchrides.html/',
 		C)
 
 def write_message(request):
@@ -218,11 +218,11 @@ def write_message(request):
 			new_message.save();
 			for u in this_participants:
 				new_message.recipients.add(u);
-			return render(request, 'create_account/write_message.html', {'form': message_form,})
+			return render(request, 'create_account/write_message.html/', {'form': message_form,})
 	else:
 		message_form = MessageForm() # An unbound form
 
-	return render(request, 'create_account/write_message.html', {
+	return render(request, 'create_account/write_message.html/', {
         'form': message_form,
     })
 
@@ -236,7 +236,7 @@ def delete_message(request):
 
 	messages = Message.objects.filter(Q(sender=current_user)|Q(recipient=current_user));
 
-	return render(request, 'create_account/inbox.html', {'messages': messages});
+	return render(request, 'create_account/inbox.html/', {'messages': messages});
 
 
 def inbox(request):
@@ -255,7 +255,7 @@ def inbox(request):
 
 
 
-	return render(request, 'create_account/inbox.html', {'conversations_recieved': conversations_recieved, 'first_messages': conversations_first_messages});
+	return render(request, 'create_account/inbox.html/', {'conversations_recieved': conversations_recieved, 'first_messages': conversations_first_messages});
 
 def sent(request):
 	netid             = request.session['netid'];
@@ -263,7 +263,7 @@ def sent(request):
 
 	messages_sent     = Message.objects.filter(sender=current_user);
 
-	return render(request, 'create_account/sent.html', {'messages_sent': messages_sent});
+	return render(request, 'create_account/sent.html/', {'messages_sent': messages_sent});
 
 
 def authenticate(request):
@@ -278,7 +278,3 @@ def authenticate(request):
 		user.save()
 	request.session["netid"] = netid
 	return redirect('home/')
-
-
-
-
