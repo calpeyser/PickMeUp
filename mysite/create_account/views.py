@@ -10,7 +10,7 @@ import datetime
 from datetime import datetime
 from datetime import date
 from django.template import Context
-import logging
+
 
 global ROOT 
 ROOT = 'http://carshare.tigerapps.org/'
