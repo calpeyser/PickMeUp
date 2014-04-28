@@ -68,8 +68,12 @@
     <div class="container">
 
       <div class="starter-template">
-        <h1>PickMeUp</h1>
-        <p class="lead">Please be patient with us. We're loading your ride...</p>
+        <h1>Are you sure?!</h1>
+        <p class="lead">This is the ride you've selected: </p>
+        <p class="lead"> {{ride_text}} </p>
+        <p class="lead"> Would you like to be added to it?</p>
+        <button type="button" onclick='add_to_ride("{{ride_text}}", "{{ride_id}}")'> Confirm! </button>
+        <button type="button" onclick="goBack()"> No, go back. </button>
       </div>
 
     </div><!-- /.container -->
@@ -80,9 +84,6 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <script src="../../dist/js/bootstrap.min.js"></script>
-
-        <!-- JavaScript for Swathing -->
-    <script type="text/javascript" src="http://google-maps-utility-library-v3.googlecode.com/svn/trunk/routeboxer/src/RouteBoxer.js"></script>
     <script>
 
     // this was borrowed from here: http://stackoverflow.com/questions/133925/javascript-post-request-like-a-form-submit
@@ -109,42 +110,15 @@
         form.submit();
     }
 
-  console.log("I found a script! ");
-  var directionService = new google.maps.DirectionsService();
-  var rboxer = new RouteBoxer();
-  var distance = 20; // km
-  var start = "{{start}}";
-  var end = "{{end}}";
-  var request = {
-    origin: start,
-    destination: end,
-    travelMode: google.maps.TravelMode.DRIVING
-  };
-  console.log(rboxer);
-  var swath = "";
-  directionService.route(request, function(result, status) {
-    console.log(request);
-    if (status == google.maps.DirectionsStatus.OK) {
-      // Box the overview path of the first route
-      var path = result.routes[0].overview_path;
-      console.log(distance);
-      var boxes = rboxer.box(path, distance);
-      
-      for (var i = 0; i < boxes.length; i++) {
-        var bounds = boxes[i];
-        // format the result to make it easier to parse later
-        var temp = bounds.toString();
-        var temp1 = temp.replace(/\(/g, "");
-        var temp2 = temp1.replace(/\)/g, "");
-        if (i != boxes.length - 1) {
-          temp2 += ", "
-        }
-        swath += temp2;
-      }
+    function add_to_ride(ride_text, ride_id) {
+      post_to_url('/add_me/', {'ride_text': ride_text, 'ride_id' : ride_id, csrfmiddlewaretoken: '{{ csrf_token }}'});
     }
-    post_to_url('/create_ride/', {'startLoc': start, 'endLoc': end, 'swaths': swath, csrfmiddlewaretoken: '{{ csrf_token }}'});
-  });
-  console.log("Hey, I'm done!");
+</script>
+<script>
+function goBack()
+  {
+  window.history.back()
+  }
 </script>
   </body>
 </html>
