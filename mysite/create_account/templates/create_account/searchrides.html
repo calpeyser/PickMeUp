@@ -65,12 +65,14 @@
     <div class="container">
 
       <div class="starter-template">
-        <h1>Going Someplace?</h1>
-        <p class="lead">Let us know about where you're headed, and we'll help you find people to go with.</p>
+        <h1>Pick a ride!</h1>
+        <p class="lead">These are the rides that match your request. Click on one that you like to join!</p>
 
         <ul>
-          {% for item in list %}
-            <p> {{item}} </p>
+          {% for result in list %}
+            {% for key, value in result.items %}
+              <button type="button" onclick='add_to_ride("{{value}}", "{{key}}")'> {{value}} </button>
+            {% endfor%}  
           {% endfor%}  
           </ul>
         </form>
@@ -84,8 +86,37 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <script src="../../dist/js/bootstrap.min.js"></script>
-  </body>
-</html>
+
+    <script>
+
+    // this was borrowed from here: http://stackoverflow.com/questions/133925/javascript-post-request-like-a-form-submit
+    function post_to_url(path, params, method) {
+        method = method || "post"; 
+        // The rest of this code assumes you are not using a library.
+        // It can be made less wordy if you use one.
+        var form = document.createElement("form");
+        form.setAttribute("method", method);
+        form.setAttribute("action", path);
+
+        for(var key in params) {
+            if(params.hasOwnProperty(key)) {
+                var hiddenField = document.createElement("input");
+                hiddenField.setAttribute("type", "hidden");
+                hiddenField.setAttribute("name", key);
+                hiddenField.setAttribute("value", params[key]);
+
+                form.appendChild(hiddenField);
+             }
+        }
+
+        document.body.appendChild(form);
+        form.submit();
+    }
+
+    function add_to_ride(ride_text, ride_id) {
+      post_to_url('/confirm/', {'ride_text': ride_text, 'ride_id' : ride_id, csrfmiddlewaretoken: '{{ csrf_token }}'});
+    }
+  </script>
 
   </body>
 </html>

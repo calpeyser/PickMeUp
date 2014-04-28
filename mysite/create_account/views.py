@@ -50,7 +50,7 @@ def ride(request):
             # Process the data in form.cleaned_data - eventually populate this from what you get from the homepage
 			new_ride = Ride(max_seats = ride_form.cleaned_data['max_seats'], 
 				open_seats = ride_form.cleaned_data['open_seats'], 
-				driver = User.objects.filter(netid=request.session['netid'])[0], 
+				driver = User.objects.filter(netid=request.session['netid'])[0],
 				start = origin[0], start_date = ride_form.cleaned_data['start_date'], 
 				start_time = ride_form.cleaned_data['start_time'], 
 				end = destination[0], 
@@ -76,6 +76,7 @@ def ride(request):
     
 # homepage
 def home(request):
+	print request.session['netid']
 	global ROOT
 	if request.method == 'POST':
 		home_form = HomeForm(request.POST)
@@ -135,35 +136,34 @@ def show_rides(request):
 	origin = map(float, originList)
 	destination = map(float, destinationList)
 	
-	query = Ride.objects.filter(start_date__gt=datetime.now()).values()
+	query = Ride.objects.filter(start_date__gt=datetime.now())
 	results = []
 	# make list of acceptable rides
 	for ride in query:
+		openNum = int(ride.open_seats)
+		# this is playing w/ pending passengers for testing
+		# should be switched to actual passengers after merge w/ Cal
+		if ride.pending_passengers.all():
+			numPass = len(ride.pending_passengers.all())
+		else:
+			numPass = 0
+
+		# if (int(ride['open_seats']) - len(ride['passengers_id']) >= 0):
+		# 	continue
+
+		if ((openNum - numPass) <= 0):
+			continue
+
 		i = 0
 		found_start = False
 		found_end = False
 		# TODO: if we dont' have reasonable swaths, then match by radius from dest.
-		swat = ride['swath'].split(',')
+		swat = ride.swath.split(',')
 		while (i in range(len(swat)) and (not found_end or not found_start)):
 			x1 = float(swat[i])
 			y1 = float(swat[i+1])
 			x2 = float(swat[i+2])
 			y2 = float(swat[i+3])
-
-			# print x1
-			# print y1
-			# print x2
-			# print y2
-			# print "Test!"
-			# print origin[0]
-			# print origin[1]
-			# print destination[0]
-			# print destination[1]
-			# print "Test finished?"
-
-			# print x1 <= destination[0] <= x2
-			# print y1 <= destination[1] <= y2
-			# print "Really end test..."
 
 			if x1 <= destination[0] <= x2 and y1 <= destination[1] <= y2:
 				found_end = True
@@ -174,7 +174,7 @@ def show_rides(request):
 			i += 4
 		if found_start and found_end:
 			# find start and end of this ride:
-			start_id = ride['start_id']
+			start_id = ride.start_id
 			coord_obj = Location.objects.filter(pk=start_id).values()[0]
 			coordS = coord_obj['coordinate'].split(',')
 			x_dist_origin = abs(origin[0] - float(coordS[0]))
@@ -186,16 +186,40 @@ def show_rides(request):
 			if origin_dist <= dest_dist:
 				results.append(ride)
 	result_list = []
-	for item in sorted(results, key=lambda ride: ride['start_date']):
-		start_id = item['start_id']
+	for item in sorted(results, key=lambda ride: ride.start_date):
+		start_id = item.start_id
 		start_obj = Location.objects.filter(pk=start_id).values()[0]
-		end_id = item['end_id']
+		end_id = item.end_id
 		end_obj = Location.objects.filter(pk=end_id).values()[0]
-		res = "Ride from " + str(start_obj) + " and going to " + str(end_obj)
-		result_list.append(res)
+		resVal = "Ride from " + str(start_obj) + " and going to " + str(end_obj)
+		resKey = item.id
+		result_list.append({resKey : resVal})
 	C = Context({'list': result_list})
-	return render(request, 'create_account/searchrides.html',
-		C)
+	return render(request, 'create_account/searchrides.html', C)
+
+def confirm(request):
+	if request.method == 'POST':
+		print request.POST
+		ride_text = request.POST.get('ride_text', False)
+		ride_id = request.POST.get('ride_id', False)
+		C = Context({'ride_text': ride_text, 'ride_id': ride_id})
+	return render(request, 'create_account/confirm.html', C)
+
+def add_passenger(request):
+	if request.method == 'POST':
+		ride_id = request.POST.get('ride_id', False)
+		ride_text = request.POST.get('ride_text', False)
+		ride = Ride.objects.filter(id=ride_id)
+		user = User.objects.filter(netid=request.session['netid'])
+		if len(ride) > 1:
+			raise MultipleObjectsReturned
+		if len(user) > 1:
+			raise MultipleObjectsReturned
+		pass_list = ride[0].pending_passengers
+		pass_list.add(user[0])
+		C = Context({'ride_text': ride_text})
+	return render(request, 'create_account/added.html', C)
+
 
 def write_message(request):
 	netid = request.session['netid'];
@@ -269,12 +293,12 @@ def sent(request):
 def authenticate(request):
 	# C = CASClient.CASClient()
 	# netid = C.Authenticate()
-	netid = "daniel"
+	netid = "charles"
 	# add user to DB if not added before
 	test = User.objects.filter(netid=netid)
 	if len(test) == 0:
 		# for now, add default phone number
-		user = User(netid=netid, phone_number="609-555-5555")
+		user = User(netid=netid, phone_number="914-555-5555")
 		user.save()
 	request.session["netid"] = netid
 	return redirect('home/')
