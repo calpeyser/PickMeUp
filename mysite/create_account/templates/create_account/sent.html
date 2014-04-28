@@ -50,11 +50,16 @@
                     </tr>
                   </thead>
                   <tbody id="items">
-                    {%for message in messages_sent%}
-                    <tr id="{{message.id}}" onclick="document.getElementById('email_display').value = '{{message.message}}'">
+                    {%for message in messages_recieved%}
+                    <script>
+                      var message_string = new String('{{message.message}}');
+                    </script>
+                    <tr id="{{message.id}}" onclick="document.getElementById('email_display').value = message_string">
                       <td>{{message.title}}</td>
                       <td>{{message.sender}}</td>
                       <td>{{message.timestamp}}</td>
+                      <td><button onclick="window.location.href='/write_message/?id={{conversation.id}}'">Reply</td>
+                      <td><button onclick="">Reply All</td>
                       <td><button onclick="window.location.href='/delete_message/?id={{message.id}}'">Delete</button></td>
                     </tr>
                     {%endfor%}
@@ -85,6 +90,7 @@
 
         </div><!--/col-9-->
     </div><!--/row-->
+
 
 
     <!-- Bootstrap core JavaScript

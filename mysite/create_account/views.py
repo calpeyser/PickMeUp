@@ -4,7 +4,7 @@ from django.http import HttpResponseRedirect
 from django.db.models import Q
 from create_account.forms import UserForm, RideForm, HomeForm, MessageForm
 from create_account.models import User, Location, Ride, Message, Conversation
-
+from message_pruner import *
 
 import datetime
 from datetime import datetime
@@ -247,23 +247,37 @@ def inbox(request):
 	conversations_recieved = [];
 	conversations_first_messages = [];
 
-	for c in Conversation.objects.all():
-		if current_user in c.participants.all():
-			messages = Message.objects.filter(conversation=c);
-			messages = messages.order_by('timestamp');
-			conversations_recieved.append((c));
+	# get messages that the user has recieved, ordered by timestamp
+	messages_recieved = message_pruner([]);
+	for m in Message.objects.extra(order_by = ['timestamp']):
+		if current_user in m.recipients.all():
+			messages_recieved.add(m);
 
+	# get only the most recent in each converstaion
+	messages_recieved.prune();
+	messages_recieved = messages_recieved.return_list();
 
-
-	return render(request, 'create_account/inbox.html', {'conversations_recieved': conversations_recieved, 'first_messages': conversations_first_messages});
+	return render(request, 'create_account/inbox.html', {'messages_recieved': messages_recieved});
 
 def sent(request):
-	netid             = request.session['netid'];
-	current_user      = User.objects.filter(netid=netid)[0]; # assume unique netids
+	netid = request.session['netid'];
+	current_user = User.objects.filter(netid=netid)[0]; # assume unique netids
 
-	messages_sent     = Message.objects.filter(sender=current_user);
+	# get conversations that involve the user.  Map those conversations to their first messages
+	conversations_recieved = [];
+	conversations_first_messages = [];
 
-	return render(request, 'create_account/sent.html', {'messages_sent': messages_sent});
+	# get messages that the user has sent, ordered by timestamp
+	messages_recieved = message_pruner([]);
+	for m in Message.objects.extra(order_by = ['timestamp']):
+		if current_user == m.sender:
+			messages_recieved.add(m);
+
+	# get only the most recent in each converstaion
+	messages_recieved.prune();
+	messages_recieved = messages_recieved.return_list();
+
+	return render(request, 'create_account/sent.html', {'messages_recieved': messages_recieved});
 
 
 def authenticate(request):
