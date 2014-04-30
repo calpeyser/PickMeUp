@@ -1,6 +1,27 @@
 from django.forms import ModelForm
 from django import forms
+from django.core import urlresolvers
+from django.db import models
 from create_account.models import User, Ride, Location, Home, Message, Conversation
+import autocomplete_light
+
+autocomplete_light.autodiscover()
+
+
+
+#------------------------------------------------------------------------------------------------------
+# PUT CUSTOM FORM ELEMENTS HERE
+
+# This is a modelform which will allow comma seperated values.  It's taken from StackOverflow:
+# http://stackoverflow.com/questions/5608576/django-enter-a-list-of-values-form-error-when-rendering-a-manytomanyfield-as-a
+class ModelCommaSeparatedChoiceField(forms.ModelMultipleChoiceField):
+    widget = forms.Textarea
+    def clean(self, value):
+        if value is not None:
+            value = [item.strip() for item in value.split(",")] # remove padding
+        return super(ModelCommaSeparatedChoiceField, self).clean(value)
+
+#------------------------------------------------------------------------------------------------------
 
 
 # Create the form class for users
@@ -28,6 +49,26 @@ class HomeForm(ModelForm):
 		model = Home
 
 class MessageForm(forms.Form):
-	recipients = forms.ModelMultipleChoiceField(queryset=User.objects.all());
+
+	recipients = forms.ModelMultipleChoiceField(queryset=User.objects.all(), widget=autocomplete_light.MultipleChoiceWidget('UserAutocomplete'));
+	#recipients = ModelCommaSeparatedChoiceField(queryset=User.objects.all(), to_field_name='netid');
 	title = forms.CharField();
 	message = forms.CharField();
+
+class MessageFormRide(forms.Form):
+	title = forms.CharField();
+	message = forms.CharField();
+
+class MessageFormConversation(forms.Form):
+	title = forms.CharField();
+	message = forms.CharField();
+
+class MessageFormTarget(forms.Form):
+	title = forms.CharField();
+	message = forms.CharField();
+
+class CancelRideForm(forms.Form):
+	cancel = forms.BooleanField(help_text="Are you sure you would like to cancel this ride?");
+
+
+
