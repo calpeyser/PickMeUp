@@ -38,7 +38,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.sessions',
     'create_account',
-    'autocomplete_light',
+    'autocomplete_light'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -83,7 +83,3 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
-
-# Cal: I'm adding this to support autocomplete.  
-TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'create_account/templates')]
-
