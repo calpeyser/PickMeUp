@@ -20,7 +20,30 @@
     <meta name="author" content="">
     <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
 
-    <title>Create a Ride</title>
+      <div class="container">
+
+      <!-- Static navbar -->
+      <div class="navbar navbar-default" role="navigation">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/home">PickMeUp</a>
+          </div>
+          <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+              <li><a href="/profile">Profile</a></li>
+              <li class="active"><a href="/inbox">Inbox</a></li>
+              <li><a href="/write_message">Write Message</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div><!--/.container-fluid -->
+      </div>
+
 
 <!-- mostly taken from http://www.bootply.com/130410 -->
 
@@ -54,13 +77,11 @@
                     <script>
                       var message_string = new String('{{message.message}}');
                     </script>
-                    <tr id="{{message.id}}" onclick="document.getElementById('email_display').value = message_string">
+                    <tr id="{{message.id}}" onclick="document.getElementById('email_display').value = '{{message.message}}'">
                       <td>{{message.title}}</td>
                       <td>{{message.sender}}</td>
                       <td>{{message.timestamp}}</td>
-                      <td><button onclick="window.location.href='/write_message/?id={{conversation.id}}'">Reply</td>
-                      <td><button onclick="">Reply All</td>
-                      <td><button onclick="window.location.href='/delete_message/?id={{message.id}}'">Delete</button></td>
+                      <td><button onclick="window.location.href='/write_message_conversation/?id={{message.id}}'">Reply</td>
                     </tr>
                     {%endfor%}
                   </tbody>
@@ -96,7 +117,6 @@
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <script src="../../dist/js/bootstrap.min.js"></script>
   </body>
 </html>
