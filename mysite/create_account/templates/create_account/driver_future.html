@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Inbox</title>
+
+        <!-- Obtain Bootstrap style sheet from CDN (online service) so it doesn't have to be on my machine -->
+  <!-- Check http://www.bootstrapcdn.com/ for latest version. -->
+  <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet">
+   <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+        font-family:"Palatino Linotype", "Book Antiqua", Palatino, serif;
+      }
+    </style>
+  </head>
+
+
+  <body>
+    <h1>You are driving the following ride</h1>
+    <h3>Date: {{this_start_date}}</h3>
+    <h3>Time: {{this_start_time}}</h3>
+    <h3>Passengers:</h3>
+    <ul>
+    {% for passenger in this_passengers %}
+      <li>{{passenger}}</li>
+    {% endfor %}
+    </ul>
+
+    <form action="{{ROOT}}write_message_ride" method="GET">
+      <input type="hidden" name="ride" value="{{this_ride.id}}"> 
+      <input type="submit" value="Message the passengers in this ride">
+    </form>
+
+    <form action="{{ROOT}}cancel_ride" method="GET">
+      <input type="hidden" name="id" value="{{this_ride.id}}">
+      <input type="submit" value="Cancel this ride">
+    </form>
+
+
+
+
+  </body>
+</html>

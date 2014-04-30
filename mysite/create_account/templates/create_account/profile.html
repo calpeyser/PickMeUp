@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Profile</title>
+
+        <!-- Obtain Bootstrap style sheet from CDN (online service) so it doesn't have to be on my machine -->
+  <!-- Check http://www.bootstrapcdn.com/ for latest version. -->
+  <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet">
+   <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+        font-family:"Palatino Linotype", "Book Antiqua", Palatino, serif;
+      }
+    </style>
+  </head>
+
+      <div class="container">
+
+      <!-- Static navbar -->
+      <div class="navbar navbar-default" role="navigation">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/home">PickMeUp</a>
+          </div>
+          <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+              <li class="active"><a href="/profile">Profile</a></li>
+              <li><a href="/inbox">Inbox</a></li>
+              <li><a href="/write_message">Write Message</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div><!--/.container-fluid -->
+      </div>
+
+
+  <body>
+    <h1>Rides that you are driving</h1>
+      {% for ride in current_rides_driving %}
+        <form action="{{ROOT}}driver_future" method="GET">
+          <input type="hidden" name="id" value="{{ride.id}}">
+          <input type="submit" value="Ride from {{ride.start}} to {{ride.end}}">
+        </form>
+      {% endfor %}
+    <h1>Rides that you are in</h1>
+      {% for ride in current_rides_passenger %}
+        <form action="{{ROOT}}passenger_future" method="GET">
+          <input type="hidden" name="id" value="{{ride.id}}">
+          <input type="submit" value="Ride from {{ride.start}} to {{ride.end}}">
+        </form>
+      {% endfor %}
+    <h1>Rides that you drove in the past</h1>
+      {% for ride in past_rides_driving %}
+        <form action="{{ROOT}}driver_past" method="GET">
+          <input type="hidden" name="id" value="{{ride.id}}">
+          <input type="submit" value="Ride from {{ride.start}} to {{ride.end}}">
+        </form>
+      {% endfor %}
+    <h1>Rides that you were a passenger in</h1>
+      {% for ride in past_rides_passenger %}
+        <form action="{{ROOT}}passenger_past" method="GET">
+          <input type="hidden" name="id" value="{{ride.id}}">
+          <input type="submit" value="Ride from {{ride.start}} to {{ride.end}}">
+        </form>
+      {% endfor %}    
+  </body>
+</html>
+
