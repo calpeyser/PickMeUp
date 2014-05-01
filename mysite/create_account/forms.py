@@ -32,11 +32,11 @@ class UserForm(ModelForm):
 # Create the form class for rides
 
 class RideForm(forms.Form):
-	max_seats = forms.IntegerField();
-	open_seats = forms.IntegerField();
-	start_date = forms.DateField();
-	start_time = forms.TimeField();
-	payment = forms.IntegerField();
+	max_seats = forms.IntegerField(label="How many seats are in your car?                ");
+	open_seats = forms.IntegerField(label="How many of those seats are available?         ");
+	start_date = forms.DateField(label="On what date are you leaving? (mm/dd/yyyy)     ");
+	start_time = forms.TimeField(label="What time are you leaving?                     ");
+	payment = forms.IntegerField(label="How much would you like to paid, per passenger?");
 
 #Form class for the home page
 class HomeForm(ModelForm):
@@ -53,19 +53,19 @@ class MessageForm(forms.Form):
 	recipients = forms.ModelMultipleChoiceField(queryset=User.objects.all(), widget=autocomplete_light.MultipleChoiceWidget('UserAutocomplete'));
 	#recipients = ModelCommaSeparatedChoiceField(queryset=User.objects.all(), to_field_name='netid');
 	title = forms.CharField();
-	message = forms.CharField();
+	message = forms.CharField(widget=forms.Textarea);
 
 class MessageFormRide(forms.Form):
 	title = forms.CharField();
-	message = forms.CharField();
+	message = forms.CharField(widget=forms.Textarea);
 
 class MessageFormConversation(forms.Form):
 	title = forms.CharField();
-	message = forms.CharField();
+	message = forms.CharField(widget=forms.Textarea);
 
 class MessageFormTarget(forms.Form):
 	title = forms.CharField();
-	message = forms.CharField();
+	message = forms.CharField(widget=forms.Textarea);
 
 class CancelRideForm(forms.Form):
 	cancel = forms.BooleanField(help_text="Are you sure you would like to cancel this ride?");
