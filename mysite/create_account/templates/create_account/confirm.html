@@ -111,7 +111,7 @@
     }
 
     function add_to_ride(ride_text, ride_id) {
-      post_to_url('/add_me/', {'ride_text': ride_text, 'ride_id' : ride_id, csrfmiddlewaretoken: '{{ csrf_token }}'});
+      post_to_url('/add_me/', {'ride_text': ride_text, 'ride_id' : ride_id, 'passenger': '{{passenger}}', csrfmiddlewaretoken: '{{ csrf_token }}'});
     }
 </script>
 <script>

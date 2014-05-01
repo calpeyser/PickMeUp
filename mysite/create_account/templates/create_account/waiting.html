@@ -109,7 +109,6 @@
         form.submit();
     }
 
-  console.log("I found a script! ");
   var directionService = new google.maps.DirectionsService();
   var rboxer = new RouteBoxer();
   var distance = 20; // km
@@ -125,6 +124,7 @@
   directionService.route(request, function(result, status) {
     console.log(request);
     if (status == google.maps.DirectionsStatus.OK) {
+      alert("Driving is legit and stuff, yo.")
       // Box the overview path of the first route
       var path = result.routes[0].overview_path;
       console.log(distance);
@@ -141,8 +141,12 @@
         }
         swath += temp2;
       }
+      post_to_url('/create_ride/', {'startLoc': start, 'endLoc': end, 'swaths': swath, csrfmiddlewaretoken: '{{ csrf_token }}'});
     }
-    post_to_url('/create_ride/', {'startLoc': start, 'endLoc': end, 'swaths': swath, csrfmiddlewaretoken: '{{ csrf_token }}'});
+    else {
+      alert("Hey, man. Looks like your ride is trying to do something wonky. Like cross the ocean. Which isn't cool. Click ok, and we'll redirect you to home, so you can try again!")
+      window.location.replace('/home/')
+    }
   });
   console.log("Hey, I'm done!");
 </script>

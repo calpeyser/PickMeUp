@@ -3,7 +3,7 @@ from django.core import serializers
 from django.http import HttpResponseRedirect
 from django.db.models import Q
 from create_account.forms import UserForm, RideForm, HomeForm, MessageForm, MessageFormRide, MessageFormConversation, MessageFormTarget, CancelRideForm
-from create_account.models import User, Location, Ride, Message, Conversation
+from create_account.models import User, Location, Ride, Message, Conversation, Passenger
 from message_pruner import *
 from CASClient import *
 import datetime
@@ -14,6 +14,7 @@ from django.template import Context
 
 global ROOT 
 ROOT = 'http://carshare.tigerapps.org/'
+#ROOT = 'http://127.0.0.1:8000/'
 
 # view to show form to populate user data
 def user(request):
@@ -41,6 +42,10 @@ def ride(request):
 		start = request.POST.get('startLoc', False)
 		end = request.POST.get('endLoc', False)
 		swath = request.POST.get('swaths', False)
+
+		print start
+		print end
+		print swath
 
 		origin = Location.objects.filter(coordinate=start)
 		destination = Location.objects.filter(coordinate=end)
@@ -72,18 +77,18 @@ def ride(request):
 	else:
 		ride_form = RideForm() # An unbound form
 	# pass form to HTML
+	print "Why am I here?!"
 	return render(request, 'create_account/create_ride.html/', {
         'form': ride_form,
-		'startLoc': str(start),
-		'endLoc': str(end),
-		'swaths': str(swath),
+        'startLoc': start,
+		'endLoc': end,
+		'swaths': swath, 
 	})
     
 # homepage
 def home(request):
 	if not validId(request):
                 return redirect("/")
-	print request.session['netid']
 	global ROOT
 	if request.method == 'POST':
 		home_form = HomeForm(request.POST)
@@ -131,16 +136,23 @@ def show_rides(request):
 	start = request.session['start']
 	end = request.session['end']
 	
-	originLoc = Location.objects.filter(id=start).values()
-	destinationLoc = Location.objects.filter(id=end).values()
+	originLoc = Location.objects.filter(id=start)
+	destinationLoc = Location.objects.filter(id=end)
+	pass_user = User.objects.filter(netid=request.session['netid'])
 
 	if len(originLoc) > 1:
 		raise MultipleObjectsReturned
 	if len(destinationLoc) > 1:
 		raise MultipleObjectsReturned
+
+	new_passenger = Passenger(person=pass_user[0], 
+		start_loc=originLoc[0], 
+		end_loc=destinationLoc[0])
+
+	new_passenger.save();
 	
-	originList = originLoc[0]['coordinate'].split(',')
-	destinationList = destinationLoc[0]['coordinate'].split(',')
+	originList = originLoc.values()[0]['coordinate'].split(',')
+	destinationList = destinationLoc.values()[0]['coordinate'].split(',')
 
 	origin = map(float, originList)
 	destination = map(float, destinationList)
@@ -152,13 +164,10 @@ def show_rides(request):
 		openNum = int(ride.open_seats)
 		# this is playing w/ pending passengers for testing
 		# should be switched to actual passengers after merge w/ Cal
-		if ride.pending_passengers.all():
-			numPass = len(ride.pending_passengers.all())
+		if ride.passengers.all():
+			numPass = len(ride.passengers.all())
 		else:
 			numPass = 0
-
-		# if (int(ride['open_seats']) - len(ride['passengers_id']) >= 0):
-		# 	continue
 
 		if ((openNum - numPass) <= 0):
 			continue
@@ -203,7 +212,7 @@ def show_rides(request):
 		resVal = "Ride from " + str(start_obj) + " and going to " + str(end_obj)
 		resKey = item.id
 		result_list.append({resKey : resVal})
-	C = Context({'list': result_list})
+	C = Context({'list': result_list, 'passenger': new_passenger.id})
 	return render(request, 'create_account/searchrides.html/', C)
 
 def confirm(request):
@@ -213,7 +222,8 @@ def confirm(request):
 		print request.POST
 		ride_text = request.POST.get('ride_text', False)
 		ride_id = request.POST.get('ride_id', False)
-		C = Context({'ride_text': ride_text, 'ride_id': ride_id})
+		passenger = request.POST.get('passenger', False)
+		C = Context({'ride_text': ride_text, 'ride_id': ride_id, 'passenger': passenger})
 	return render(request, 'create_account/confirm.html', C)
 
 def add_passenger(request):
@@ -222,8 +232,9 @@ def add_passenger(request):
 	if request.method == 'POST':
 		ride_id = request.POST.get('ride_id', False)
 		ride_text = request.POST.get('ride_text', False)
+		pass_id = request.POST.get('passenger', False)
 		ride = Ride.objects.filter(id=ride_id)
-		user = User.objects.filter(netid=request.session['netid'])
+		user = Passenger.objects.filter(id=pass_id)
 		if len(ride) > 1:
 			raise MultipleObjectsReturned
 		if len(user) > 1:

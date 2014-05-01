@@ -16,12 +16,20 @@ class Location(models.Model):
 	def __unicode__(self):
 		return unicode(self.name)
 
+class Passenger(models.Model):
+ 	person            = models.ForeignKey(User, related_name='personhood_of');
+ 	start_loc         = models.ForeignKey(Location, related_name='start_of_ride');
+ 	end_loc           = models.ForeignKey(Location, related_name='end_of_ride');
+
+ 	def __unicode__(self):
+		return unicode(self.person.netid)
+
 class Ride(models.Model):
 	max_seats              = models.IntegerField();
 	open_seats             = models.CommaSeparatedIntegerField(max_length = 16); # ideally, the max length should be max_seats
 	driver                 = models.ForeignKey(User, related_name='driver_of'); # foreignkey = manyToOne
-	pending_passengers     = models.ManyToManyField(User, related_name='pending_passengers_of', blank=True, null=True); 
-	passengers             = models.ManyToManyField(User, related_name='passengers_of', blank=True, null=True); 
+	pending_passengers     = models.ManyToManyField(Passenger, related_name='pending_passengers_of', blank=True, null=True); 
+	passengers             = models.ManyToManyField(Passenger, related_name='passengers_of', blank=True, null=True); 
 	start                  = models.ForeignKey(Location, related_name='start_of');
 	start_date             = models.DateField(null = True); 
 	start_time             = models.TimeField(null = True);
