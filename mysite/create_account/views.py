@@ -9,7 +9,7 @@ from message_pruner import *
 import datetime
 from datetime import datetime
 from datetime import date
-from django.template import Context
+from django.template import Context, RequestContext
 
 
 global ROOT 
@@ -236,9 +236,17 @@ def add_passenger(request):
 			raise MultipleObjectsReturned
 		if len(user) > 1:
 			raise MultipleObjectsReturned
-		pass_list = ride[0].pending_passengers
-		pass_list.add(user[0])
-		C = Context({'ride_text': ride_text})
+		# check if this person is the driver for this ride
+		driver = ride[0].driver
+		if driver.id == user[0].person.id:
+			flag = "You can't be added!"
+		else:
+			pass_list = ride[0].pending_passengers
+			pass_list.add(user[0])
+		if flag:
+			C = Context({'ride_text': ride_text, 'flag': flag})
+		else:
+			C = Context({'ride_text': ride_text})
 	return render(request, 'create_account/added.html', C)
 
 
@@ -467,7 +475,7 @@ def cancel_ride(request):
 def authenticate(request):
 	# C = CASClient.CASClient()
 	# netid = C.Authenticate()
-	netid = "valya"
+	netid = "charles"
 	# add user to DB if not added before
 	test = User.objects.filter(netid=netid)
 	if len(test) == 0:
