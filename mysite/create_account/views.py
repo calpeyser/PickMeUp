@@ -17,6 +17,8 @@ ROOT = 'http://carshare.tigerapps.org/'
 
 # view to show form to populate user data
 def user(request):
+	if not validId(request):
+                return redirect("/")
 	if request.method == 'POST': # If the form has been submitted...
 		user_form = UserForm(request.POST)
 		if user_form.is_valid():
@@ -33,6 +35,8 @@ def user(request):
 
 # view to show form to populate ride data
 def ride(request):
+	if not validId(request):
+                return redirect("/")
 	if request.method == 'POST': # If the form has been submitted...
 		start = request.POST.get('startLoc', False)
 		end = request.POST.get('endLoc', False)
@@ -77,6 +81,8 @@ def ride(request):
     
 # homepage
 def home(request):
+	if not validId(request):
+                return redirect("/")
 	print request.session['netid']
 	global ROOT
 	if request.method == 'POST':
@@ -119,6 +125,8 @@ def home(request):
 
 # view to show all rides that match a query, hopefully?
 def show_rides(request):
+	if not validId(request):
+                return redirect("/")
 	# actually process request
 	start = request.session['start']
 	end = request.session['end']
@@ -199,6 +207,8 @@ def show_rides(request):
 	return render(request, 'create_account/searchrides.html/', C)
 
 def confirm(request):
+	if not validId(request):
+                return redirect("/")
 	if request.method == 'POST':
 		print request.POST
 		ride_text = request.POST.get('ride_text', False)
@@ -207,6 +217,8 @@ def confirm(request):
 	return render(request, 'create_account/confirm.html', C)
 
 def add_passenger(request):
+	if not validId(request):
+                return redirect("/")
 	if request.method == 'POST':
 		ride_id = request.POST.get('ride_id', False)
 		ride_text = request.POST.get('ride_text', False)
@@ -223,6 +235,8 @@ def add_passenger(request):
 
 
 def write_message(request):
+	if not validId(request):
+                return redirect("/")
 	netid = request.session['netid'];
 	current_user = User.objects.filter(netid=netid)[0]; # assume unique netids
 
@@ -247,6 +261,8 @@ def write_message(request):
     })	
 
 def write_message_ride(request):
+	if not validId(request):
+                return redirect("/")
 	netid = request.session['netid'];
 	current_user = User.objects.filter(netid=netid)[0]; # assume unique netids
 
@@ -271,6 +287,8 @@ def write_message_ride(request):
     })	
 
 def write_message_conversation(request):
+	if not validId(request):
+                return redirect("/")
 	netid = request.session['netid'];
 	current_user = User.objects.filter(netid=netid)[0];
 
@@ -291,6 +309,8 @@ def write_message_conversation(request):
     })	
 
 def write_message_target(request):
+	if not validId(request):
+                return redirect("/")
 	netid = request.session['netid'];
 	current_user = User.objects.filter(netid=netid)[0];
 
@@ -315,6 +335,8 @@ def write_message_target(request):
 
 
 def delete_message(request):
+	if not validId(request):
+                return redirect("/")
 	if request.method == 'GET':
 		message_to_delete = Message.objects.filter(id=request.GET.get('id'));
 		message_to_delete.delete();
@@ -328,6 +350,8 @@ def delete_message(request):
 
 
 def inbox(request):
+	if not validId(request):
+                return redirect("/")
 	netid = request.session['netid'];
 	current_user = User.objects.filter(netid=netid)[0]; # assume unique netids
 
@@ -348,6 +372,8 @@ def inbox(request):
 	return render(request, 'create_account/inbox.html', {'messages_recieved': messages_recieved});
 
 def sent(request):
+	if not validId(request):
+                return redirect("/")
 	netid = request.session['netid'];
 	current_user = User.objects.filter(netid=netid)[0]; # assume unique netids
 
@@ -368,6 +394,8 @@ def sent(request):
 	return render(request, 'create_account/sent.html', {'messages_recieved': messages_recieved});
 
 def driver_past(request):
+	if not validId(request):
+                return redirect("/")
 	netid = request.session['netid'];
 	current_user = User.objects.filter(netid=netid)[0]; # assume unique netids
 	
@@ -382,6 +410,8 @@ def driver_past(request):
 
 
 def driver_future(request):
+	if not validId(request):
+                return redirect("/")
 	netid = request.session['netid'];
 	current_user = User.objects.filter(netid=netid)[0]; # assume unique netids
 	
@@ -395,6 +425,8 @@ def driver_future(request):
 	return render(request, 'create_account/driver_future.html', {'this_ride': this_ride, 'this_passengers': this_passengers, 'this_start': this_start, 'this_end': this_end, 'this_start_date': this_start_date, 'this_start_time': this_start_time, "ROOT":ROOT});
 
 def passenger_past(request):
+	if not validId(request):
+                return redirect("/")
 	netid = request.session['netid'];
 	current_user = User.objects.filter(netid=netid)[0]; # assume unique netids
 
@@ -409,6 +441,8 @@ def passenger_past(request):
 	return render(request, 'create_account/passenger_past.html', {'this_ride': this_ride, 'this_driver': this_driver, 'this_passengers': this_passengers, 'this_start': this_start, 'this_end': this_end, 'this_start_date': this_start_date, 'this_start_time': this_start_time, "ROOT":ROOT});
 
 def passenger_future(request):
+	if not validId(request):
+                return redirect("/")
 	netid = request.session['netid'];
 	current_user = User.objects.filter(netid=netid)[0]; # assume unique netids
 
@@ -423,6 +457,8 @@ def passenger_future(request):
 	return render(request, 'create_account/passenger_future.html', {'this_ride': this_ride, 'this_driver': this_driver, 'this_passengers': this_passengers, 'this_start': this_start, 'this_end': this_end, 'this_start_date': this_start_date, 'this_start_time': this_start_time, "ROOT":ROOT});
 
 def cancel_ride(request):
+	if not validId(request):
+                return redirect("/")
 	netid = request.session['netid'];
 	current_user = User.objects.filter(netid=netid)[0]; # assume unique netids
 
@@ -461,8 +497,9 @@ def authenticate(request):
 	request.session["netid"] = netid
 	return redirect('home/')
 
-
 def profile(request):
+	if not validId(request):
+		return redirect("/")
 	netid = request.session['netid'];
 	current_user = User.objects.filter(netid=netid)[0]; # assume unique netids
 
@@ -486,3 +523,7 @@ def profile(request):
 
 	return render(request, 'create_account/profile.html', {'current_rides_driving': current_rides_driving, 'current_rides_passenger': current_rides_passenger, 'past_rides_driving': past_rides_driving, 'past_rides_passenger': past_rides_passenger, 'ROOT': ROOT});
 
+def validId(request):
+	if 'netid' in request.session:
+		return True
+	return False
