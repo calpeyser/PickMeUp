@@ -5,12 +5,12 @@ from django.db.models import Q
 from create_account.forms import UserForm, RideForm, HomeForm, MessageForm, MessageFormRide, MessageFormConversation, MessageFormTarget, CancelRideForm
 from create_account.models import User, Location, Ride, Message, Conversation
 from message_pruner import *
-
+from CASClient import *
 import datetime
 from datetime import datetime
 from datetime import date
 from django.template import Context
-
+import logging
 
 global ROOT 
 ROOT = 'http://carshare.tigerapps.org/'
@@ -443,11 +443,15 @@ def cancel_ride(request):
 
 
 
-
 def authenticate(request):
-	# C = CASClient.CASClient()
-	# netid = C.Authenticate()
-	netid = "charles"
+	ticket = request.GET.get('ticket',None)
+	if ticket == None:
+		return HttpResponseRedirect('https://fed.princeton.edu/cas/login?service=http://carshare.tigerapps.org/')
+	C = CASClient()
+	netid = C.Validate(ticket)
+	if netid == None:
+		return render(request, 'create_account/invalid_netid.html',{})
+	# Netid = "charles"
 	# add user to DB if not added before
 	test = User.objects.filter(netid=netid)
 	if len(test) == 0:
