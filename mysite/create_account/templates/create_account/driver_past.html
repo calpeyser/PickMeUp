@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Inbox</title>
+    <title>PickMeUp</title>
 
         <!-- Obtain Bootstrap style sheet from CDN (online service) so it doesn't have to be on my machine -->
   <!-- Check http://www.bootstrapcdn.com/ for latest version. -->
@@ -15,7 +15,38 @@
   </head>
 
 
-  <body>
+  <body background="http://images2.alphacoders.com/439/439147.jpg">
+          <div class="container">
+      <!-- Static navbar -->
+      <div class="navbar navbar-default" role="navigation">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/home">PickMeUp</a>
+          </div>
+          <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+              <li class="active"><a href="/profile">Profile</a></li>
+              <li><a href="/inbox">Inbox</a></li>
+              <li><a href="/write_message">Write Message</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+              <li><a href="/about">About</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div><!--/.container-fluid -->
+      </div>
+
+    <div class="container">
+      <div class="starter-template" align="center">
+        <div class="btn btn-default navbar-btn">
+          <div align="center">
+
     <h1>You drove the following ride</h1>
     <h3>Date: {{this_start_date}}</h3>
     <h3>Time: {{this_start_time}}</h3>
@@ -28,9 +59,10 @@
 
     <form action="{{ROOT}}write_message_ride" method="GET">
       <input type="hidden" name="ride" value="{{this_ride.id}}"> 
-      <input type="submit" value="Message the passengers in this ride">
+      <input type="submit" value="Message the passengers in this ride" class="btn btn-default navbar-btn">
     </form>
 
+  </div></div></div></div>
 
 
   </body>

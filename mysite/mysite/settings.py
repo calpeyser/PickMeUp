@@ -65,7 +65,7 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, '/var/www/PickMeUp/mysite/db.sqlite3'),
+        'NAME': os.path.join(BASE_DIR, '/Users/calpeyser/Desktop/EC2/PickMeUp/mysite/db.sqlite3'),
     }
 }
 

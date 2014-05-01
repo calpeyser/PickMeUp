@@ -39,6 +39,7 @@ urlpatterns = patterns('',
     url(r'^passenger_future/', 'create_account.views.passenger_future'),
     url(r'^passenger_past/', 'create_account.views.passenger_past'),
     url(r'^cancel_ride/', 'create_account.views.cancel_ride'),
-
+    url(r'^about/', 'create_account.views.about'),
+    url(r'^choose_passenger/', 'create_account.views.choose_passenger'),
 
 ) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

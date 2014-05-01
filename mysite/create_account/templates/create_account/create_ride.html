@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Create A Ride</title>
+    <title>PickMeUp</title>
 
         <!-- Obtain Bootstrap style sheet from CDN (online service) so it doesn't have to be on my machine -->
   <!-- Check http://www.bootstrapcdn.com/ for latest version. -->
@@ -37,25 +37,57 @@
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+
+
+
+
   </head>
 
-  <body>
+  <body background="http://diet-moments.com/wp-content/uploads/2012/07/Highway.jpg">
 
-
+      <div class="container">
+      <!-- Static navbar -->
+      <div class="navbar navbar-default" role="navigation">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/home">PickMeUp</a>
+          </div>
+          <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+              <li><a href="/profile">Profile</a></li>
+              <li><a href="/inbox">Inbox</a></li>
+              <li><a href="/write_message">Write Message</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+              <li><a href="/about">About</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div><!--/.container-fluid -->
+      </div>
     <div class="container">
 
-      <div class="starter-template">
-        <h1>Going Someplace?</h1>
-        <p class="lead">Let us know about where you're headed, and we'll help you find people to go with.</p>
+      <div class="starter-template" align ="center">
+        <h1 style="color:black;">Going Someplace?</h1>
+        <p class="lead" style="color:black;">Let us know about where you're headed, and we'll help you find people to go with.</p>
 
-        <form method="POST" action=""> {% csrf_token %}
+        <div class="btn btn-default navbar-btn">
+        <form class="well form-inline" method="POST" action=""> {% csrf_token %}
+          <div align="center">
           {{form.as_p}}
           <input type="hidden" name="startLoc" value="{{startLoc}}" />
           <input type="hidden" name="endLoc" value="{{endLoc}}" />
           <input type="hidden" name="swaths" value="{{swaths}}" />
-          <input type="submit" value="Submit">
+          <input type="submit" value="Publish Your Ride" class="btn btn-default navbar-btn">
+        </div>
         </form>
       </div>
+    </div>
 
     </div><!-- /.container -->
 

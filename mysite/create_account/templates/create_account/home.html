@@ -18,6 +18,33 @@
       }
     </style>
 
+      <div class="container">
+      <!-- Static navbar -->
+      <div class="navbar navbar-default" role="navigation">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/home">PickMeUp</a>
+          </div>
+          <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+              <li><a href="/profile">Profile</a></li>
+              <li><a href="/inbox">Inbox</a></li>
+              <li><a href="/write_message">Write Message</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+              <li><a href="/about">About</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div><!--/.container-fluid -->
+      </div>
+
+
 
     
     
@@ -29,7 +56,7 @@
     <meta name="author" content="">
     <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
 
-    <title>Starter Template for Bootstrap</title>
+    <title>Princeton PickMeUp</title>
 
     <!-- Bootstrap core CSS -->
     <link href="../../dist/css/bootstrap.min.css" rel="stylesheet">
@@ -164,7 +191,7 @@ function geolocate() {
     </style>
   </head>
 
-  <body onload="initialize()">
+  <body onload="initialize()" background="http://diet-moments.com/wp-content/uploads/2012/07/Highway.jpg">
 
 
     <br>
@@ -173,21 +200,27 @@ function geolocate() {
     <div class="container" align="center">
 
       <div class="starter-template">
-        <h1>PickMeUp</h1>
-        <p class="lead">I'm going...</p>
+        <h1 style="color:black;font-size:60px">PickMeUp</h1>
+        <h3 style="color:black;">A ride sharing application by Princeton students, for Princeton students, to help you get where you need to go.</h3>
+        <hr>
+        <p class="lead" style="color:white;font-size:24px;">Where are you going?</p>
 
         <form method="POST" action=""> {% csrf_token %}
         <div id="locationField">
-  		    <input id="autocomplete1" placeholder="From"
+  		    <input id="autocomplete1" placeholder="Starting From"
              onFocus="geolocate()" type="text"></input>
  		</div>
+    <br>
  		<div id="locationField">
-  		    <input id="autocomplete2" placeholder="To"
+  		    <input id="autocomplete2" placeholder="Going To"
              onFocus="geolocate()" type="text"></input>
  		</div>
+    <br>
+      <p class="lead" style="color:white;font-size:24px;">Do you need gas money, or will you give it for a ride?</p>
+
  		  {{ form.as_p }}
-          <input type="submit" name="drive" value="I'm driving.">
-          <input type="submit" name="hitch" value="I'm looking for a ride.">
+          <input type="submit" name="drive" value="I'm driving." class="btn btn-default navbar-btn">
+          <input type="submit" name="hitch" value="I'm looking for a ride." class="btn btn-default navbar-btn">
         </form>
     </div>
     </div><!-- /.container -->

@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.core import serializers
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.db.models import Q
 from create_account.forms import UserForm, RideForm, HomeForm, MessageForm, MessageFormRide, MessageFormConversation, MessageFormTarget, CancelRideForm
 from create_account.models import User, Location, Ride, Message, Conversation
@@ -13,7 +13,7 @@ from django.template import Context
 
 
 global ROOT 
-ROOT = 'http://carshare.tigerapps.org/'
+ROOT = 'http://127.0.0.1:8000/'
 
 # view to show form to populate user data
 def user(request):
@@ -192,7 +192,7 @@ def show_rides(request):
 		start_obj = Location.objects.filter(pk=start_id).values()[0]
 		end_id = item.end_id
 		end_obj = Location.objects.filter(pk=end_id).values()[0]
-		resVal = "Ride from " + str(start_obj) + " and going to " + str(end_obj)
+		resVal = str(ride.driver) + ", driving from " + str(start_obj['name']) + ", going to " + str(end_obj['name'])
 		resKey = item.id
 		result_list.append({resKey : resVal})
 	C = Context({'list': result_list})
@@ -387,12 +387,13 @@ def driver_future(request):
 	
 	this_ride       = Ride.objects.filter(id=request.GET.get('id'))[0];
 	this_passengers = this_ride.passengers.all();
+	this_pending    = this_ride.pending_passengers.all();
 	this_start      = this_ride.start.name;
 	this_end        = this_ride.end.name;
 	this_start_date = this_ride.start_date;
 	this_start_time = this_ride.start_time;
 
-	return render(request, 'create_account/driver_future.html', {'this_ride': this_ride, 'this_passengers': this_passengers, 'this_start': this_start, 'this_end': this_end, 'this_start_date': this_start_date, 'this_start_time': this_start_time, "ROOT":ROOT});
+	return render(request, 'create_account/driver_future.html', {'this_ride': this_ride, 'this_pending': this_pending, 'this_passengers': this_passengers, 'this_start': this_start, 'this_end': this_end, 'this_start_date': this_start_date, 'this_start_time': this_start_time, "ROOT":ROOT});
 
 def passenger_past(request):
 	netid = request.session['netid'];
@@ -441,7 +442,33 @@ def cancel_ride(request):
         'form': cancel_form,
     })
 
+def choose_passenger(request):
+	netid = request.session['netid'];
+	current_user = User.objects.filter(netid=netid)[0]; # assume unique netids
 
+	this_ride = Ride.objects.filter(id=request.GET.get('ride_id'))[0];
+	this_user = User.objects.filter(id=request.GET.get('user_id'))[0];
+
+	option_approve = request.GET.get('Approve', False);
+	option_decline = request.GET.get('Decline', False);
+
+	if option_approve:
+		print "hi";
+		this_ride.pending_passengers.remove(this_user);
+		this_ride.passengers.add(this_user);
+	if option_decline:
+		this_ride.pending_passengers.remove(this_user);
+
+	request = HttpResponse();
+	request.path = '/driver_future/'
+	request.method = 'GET';
+	request.session = {'netid': netid};
+	request.GET = {"id": this_ride.id,};
+	request.META = {};
+	return driver_future(request); 
+
+def about(request):
+	return render(request, 'create_account/about.html');
 
 
 def authenticate(request):
