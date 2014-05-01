@@ -56,3 +56,4 @@ class Message(models.Model):
 		return unicode(self.title);
 
 
+

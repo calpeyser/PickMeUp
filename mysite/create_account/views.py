@@ -2,17 +2,18 @@ from django.shortcuts import render, redirect
 from django.core import serializers
 from django.http import HttpResponseRedirect
 from django.db.models import Q
-from create_account.forms import UserForm, RideForm, HomeForm, MessageForm
+from create_account.forms import UserForm, RideForm, HomeForm, MessageForm, MessageFormRide, MessageFormConversation, MessageFormTarget, CancelRideForm
 from create_account.models import User, Location, Ride, Message, Conversation
-
+from message_pruner import *
 
 import datetime
 from datetime import datetime
+from datetime import date
 from django.template import Context
 
 
 global ROOT 
-ROOT = 'http://127.0.0.1:8000/'
+ROOT = 'http://carshare.tigerapps.org/'
 
 # view to show form to populate user data
 def user(request):
@@ -26,7 +27,7 @@ def user(request):
 		user_form = UserForm() # An unbound form
 
 	# put the actual html here, probably?
-	return render(request, 'create_account/create_ride.html', {
+	return render(request, 'create_account/create_ride.html/', {
         'form': user_form,
     })
 
@@ -57,7 +58,7 @@ def ride(request):
 				payment = ride_form.cleaned_data['payment'], 
 				swath = swath);
 			new_ride.save();
-			return render(request, 'create_account/create_ride.html', {
+			return render(request, 'create_account/create_ride.html/', {
 				'form': ride_form,
 				'startLoc': start,
 				'endLoc': end,
@@ -67,7 +68,7 @@ def ride(request):
 	else:
 		ride_form = RideForm() # An unbound form
 	# pass form to HTML
-	return render(request, 'create_account/create_ride.html', {
+	return render(request, 'create_account/create_ride.html/', {
         'form': ride_form,
 		'startLoc': str(start),
 		'endLoc': str(end),
@@ -102,7 +103,7 @@ def home(request):
 			option_drive = request.POST.get('drive', False);
 			option_hitch = request.POST.get('hitch', False);
 			if option_drive:
-				return render(request, 'create_account/waiting.html', {
+				return render(request, 'create_account/waiting.html/', {
 					'start': origin.coordinate,
 					'end': destination.coordinate,
 				})
@@ -112,7 +113,7 @@ def home(request):
 				raise Http404;
 	else:
 		home_form = HomeForm()
-	return render(request, 'create_account/home.html', {
+	return render(request, 'create_account/home.html/', {
 		'form': home_form,
 	})
 
@@ -225,30 +226,93 @@ def write_message(request):
 	netid = request.session['netid'];
 	current_user = User.objects.filter(netid=netid)[0]; # assume unique netids
 
-	if request.method == 'POST': # If the form has been submitted...
-		message_form = MessageForm(request.POST)
-		if message_form.is_valid():
-			# if this is a not a new conversation, this goes to the given conversation
-			if request.method == 'GET':
-				this_conversation = Conversation.objects.filter(id=request.GET.get('id'));
-				this_participants = this_conversation.participants;
-			else:
+	if request.method == 'POST': # form submitted
+			message_form = MessageForm(request.POST);
+			if message_form.is_valid():
 				this_conversation = Conversation(title=message_form.cleaned_data['title']);
 				this_conversation.save();
 				this_participants = message_form.cleaned_data['recipients'];
 				for u in this_participants:
 					this_conversation.participants.add(u);
-			new_message = Message(sender = current_user, title = message_form.cleaned_data['title'], message = message_form.cleaned_data['message'], unread = True, timestamp = datetime.now(), conversation = this_conversation); 
-			new_message.save();
-			for u in this_participants:
-				new_message.recipients.add(u);
-			return render(request, 'create_account/write_message.html', {'form': message_form,})
+				new_message = Message(sender = current_user, title = message_form.cleaned_data['title'], message = message_form.cleaned_data['message'], unread = True, timestamp = datetime.now(), conversation = this_conversation); 
+				new_message.save();
+				for u in this_participants:
+					new_message.recipients.add(u);
+				return render(request, 'create_account/home.html')
 	else:
-		message_form = MessageForm() # An unbound form
+		message_form = MessageForm();
 
 	return render(request, 'create_account/write_message.html', {
         'form': message_form,
-    })
+    })	
+
+def write_message_ride(request):
+	netid = request.session['netid'];
+	current_user = User.objects.filter(netid=netid)[0]; # assume unique netids
+
+	if request.method == 'POST':
+		this_ride = Ride.objects.filter(id=request.GET.get('ride'))[0];
+		this_participants = this_ride.passengers.all();
+		message_form = MessageFormRide(request.POST);
+		if message_form.is_valid():
+			this_conversation = Conversation(title=message_form.cleaned_data['title']);
+			this_conversation.save();
+			for u in this_participants:
+				this_conversation.participants.add(u);
+			new_message = Message(sender=current_user, title=message_form.cleaned_data['title'], message=message_form.cleaned_data['message'], unread=True, timestamp=datetime.now(), conversation=this_conversation);
+			new_message.save();
+			for u in this_participants:
+				new_message.recipients.add(u);
+			return render(request, 'create_account/home.html')
+	else:
+		message_form = MessageFormRide();
+	return render(request, 'create_account/write_message.html', {
+        'form': message_form,
+    })	
+
+def write_message_conversation(request):
+	netid = request.session['netid'];
+	current_user = User.objects.filter(netid=netid)[0];
+
+	if request.method == 'POST':
+		this_conversation = Conversation.objects.filter(id=request.GET.get('id'))[0];
+		this_participants = this_conversation.participants.all();
+		message_form = MessageFormConversation(request.POST);
+		if message_form.is_valid():
+			new_message = Message(sender=current_user, title=message_form.cleaned_data['title'], message=message_form.cleaned_data['message'], unread=True, timestamp=datetime.now(), conversation=this_conversation);
+			new_message.save()
+			for u in this_participants:
+				new_message.recipients.add(u);
+			return render(request, 'create_account/home.html')
+	else:
+		message_form = MessageFormConversation();
+	return render(request, 'create_account/write_message.html/', {
+        'form': message_form,
+    })	
+
+def write_message_target(request):
+	netid = request.session['netid'];
+	current_user = User.objects.filter(netid=netid)[0];
+
+	# get the target
+	target_user = User.objects.filter(id=request.GET.get('user'))[0];
+
+	if request.method == 'POST':
+		message_form = MessageFormTarget(request.POST);
+		if message_form.is_valid():
+			this_conversation = Conversation(title=message_form.cleaned_data['title']);
+			this_conversation.save();
+			this_conversation.participants.add(target_user);
+			new_message = Message(sender = current_user, title = message_form.cleaned_data['title'], message = message_form.cleaned_data['message'], unread = True, timestamp = datetime.now(), conversation = this_conversation); 
+			new_message.save();
+			new_message.recipients.add(target_user);
+			return render(request, 'create_account/home.html')
+	else:
+		message_form = MessageFormTarget();
+	return render(request, 'create_account/write_message.html', {
+        'form': message_form,
+    })	
+
 
 def delete_message(request):
 	if request.method == 'GET':
@@ -260,7 +324,7 @@ def delete_message(request):
 
 	messages = Message.objects.filter(Q(sender=current_user)|Q(recipient=current_user));
 
-	return render(request, 'create_account/inbox.html', {'messages': messages});
+	return render(request, 'create_account/inbox.html/', {'messages': messages});
 
 
 def inbox(request):
@@ -271,23 +335,113 @@ def inbox(request):
 	conversations_recieved = [];
 	conversations_first_messages = [];
 
-	for c in Conversation.objects.all():
-		if current_user in c.participants.all():
-			messages = Message.objects.filter(conversation=c);
-			messages = messages.order_by('timestamp');
-			conversations_recieved.append((c));
+	# get messages that the user has recieved, ordered by timestamp
+	messages_recieved = message_pruner([]);
+	for m in Message.objects.extra(order_by = ['timestamp']):
+		if current_user in m.recipients.all():
+			messages_recieved.add(m);
 
+	# get only the most recent in each converstaion
+	messages_recieved.prune();
+	messages_recieved = messages_recieved.return_list();
 
-
-	return render(request, 'create_account/inbox.html', {'conversations_recieved': conversations_recieved, 'first_messages': conversations_first_messages});
+	return render(request, 'create_account/inbox.html', {'messages_recieved': messages_recieved});
 
 def sent(request):
-	netid             = request.session['netid'];
-	current_user      = User.objects.filter(netid=netid)[0]; # assume unique netids
+	netid = request.session['netid'];
+	current_user = User.objects.filter(netid=netid)[0]; # assume unique netids
 
-	messages_sent     = Message.objects.filter(sender=current_user);
+	# get conversations that involve the user.  Map those conversations to their first messages
+	conversations_recieved = [];
+	conversations_first_messages = [];
 
-	return render(request, 'create_account/sent.html', {'messages_sent': messages_sent});
+	# get messages that the user has sent, ordered by timestamp
+	messages_recieved = message_pruner([]);
+	for m in Message.objects.extra(order_by = ['timestamp']):
+		if current_user == m.sender:
+			messages_recieved.add(m);
+
+	# get only the most recent in each converstaion
+	messages_recieved.prune();
+	messages_recieved = messages_recieved.return_list();
+
+	return render(request, 'create_account/sent.html', {'messages_recieved': messages_recieved});
+
+def driver_past(request):
+	netid = request.session['netid'];
+	current_user = User.objects.filter(netid=netid)[0]; # assume unique netids
+	
+	this_ride       = Ride.objects.filter(id=request.GET.get('id'))[0];
+	this_passengers = this_ride.passengers.all();
+	this_start      = this_ride.start.name;
+	this_end        = this_ride.end.name;
+	this_start_date = this_ride.start_date;
+	this_start_time = this_ride.start_time;
+
+	return render(request, 'create_account/driver_past.html', {'this_ride': this_ride, 'this_passengers': this_passengers, 'this_start': this_start, 'this_end': this_end, 'this_start_date': this_start_date, 'this_start_time': this_start_time, "ROOT":ROOT});
+
+
+def driver_future(request):
+	netid = request.session['netid'];
+	current_user = User.objects.filter(netid=netid)[0]; # assume unique netids
+	
+	this_ride       = Ride.objects.filter(id=request.GET.get('id'))[0];
+	this_passengers = this_ride.passengers.all();
+	this_start      = this_ride.start.name;
+	this_end        = this_ride.end.name;
+	this_start_date = this_ride.start_date;
+	this_start_time = this_ride.start_time;
+
+	return render(request, 'create_account/driver_future.html', {'this_ride': this_ride, 'this_passengers': this_passengers, 'this_start': this_start, 'this_end': this_end, 'this_start_date': this_start_date, 'this_start_time': this_start_time, "ROOT":ROOT});
+
+def passenger_past(request):
+	netid = request.session['netid'];
+	current_user = User.objects.filter(netid=netid)[0]; # assume unique netids
+
+	this_ride       = Ride.objects.filter(id=request.GET.get('id'))[0];
+	this_passengers = this_ride.passengers.all();
+	this_driver     = this_ride.driver;
+	this_start      = this_ride.start.name;
+	this_end        = this_ride.end.name;
+	this_start_date = this_ride.start_date;
+	this_start_time = this_ride.start_time;
+
+	return render(request, 'create_account/passenger_past.html', {'this_ride': this_ride, 'this_driver': this_driver, 'this_passengers': this_passengers, 'this_start': this_start, 'this_end': this_end, 'this_start_date': this_start_date, 'this_start_time': this_start_time, "ROOT":ROOT});
+
+def passenger_future(request):
+	netid = request.session['netid'];
+	current_user = User.objects.filter(netid=netid)[0]; # assume unique netids
+
+	this_ride       = Ride.objects.filter(id=request.GET.get('id'))[0];
+	this_passengers = this_ride.passengers.all();
+	this_driver     = this_ride.driver;
+	this_start      = this_ride.start.name;
+	this_end        = this_ride.end.name;
+	this_start_date = this_ride.start_date;
+	this_start_time = this_ride.start_time;
+
+	return render(request, 'create_account/passenger_future.html', {'this_ride': this_ride, 'this_driver': this_driver, 'this_passengers': this_passengers, 'this_start': this_start, 'this_end': this_end, 'this_start_date': this_start_date, 'this_start_time': this_start_time, "ROOT":ROOT});
+
+def cancel_ride(request):
+	netid = request.session['netid'];
+	current_user = User.objects.filter(netid=netid)[0]; # assume unique netids
+
+	this_ride = Ride.objects.filter(id=request.GET.get('id'));
+
+	if request.method == 'POST': # If the form has been submitted...
+		cancel_form = CancelRideForm(request.POST)
+		if cancel_form.is_valid():
+			if (cancel_form.cleaned_data['cancel'] == True):
+				this_ride.delete();
+			return HttpResponseRedirect('/profile');
+	else:
+		cancel_form = CancelRideForm() # An unbound form
+
+	return render(request, 'create_account/cancel_ride.html', {
+        'form': cancel_form,
+    })
+
+
 
 
 def authenticate(request):
@@ -304,5 +458,27 @@ def authenticate(request):
 	return redirect('home/')
 
 
+def profile(request):
+	netid = request.session['netid'];
+	current_user = User.objects.filter(netid=netid)[0]; # assume unique netids
 
+	# Get the rides that the user is currently driving
+	current_rides_driving   = Ride.objects.filter(driver=current_user, start_date__gt=date.today());
+	# Get the rides that the user is currently a passenger in
+	current_rides_passenger = [];
+	for ride in Ride.objects.filter(start_date__gt=date.today()):
+		for passenger in ride.passengers.all():
+			if current_user == passenger:
+				current_rides_passenger.append(ride);
+
+	# Get the rides that the user drove in the past
+	past_rides_driving      = Ride.objects.filter(driver=current_user, start_date__lt=date.today());
+	# Get the rides that the user was a passenger in in the past
+	past_rides_passenger = [];
+	for ride in Ride.objects.filter(start_date__lt=date.today()):
+		for passenger in ride.passengers.all():
+			if current_user == passenger:
+				past_rides_passenger.append(ride);
+
+	return render(request, 'create_account/profile.html', {'current_rides_driving': current_rides_driving, 'current_rides_passenger': current_rides_passenger, 'past_rides_driving': past_rides_driving, 'past_rides_passenger': past_rides_passenger, 'ROOT': ROOT});
 
