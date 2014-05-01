@@ -14,7 +14,7 @@
    <style>
       body {
         padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
-        font-family:"Palatino Linotype", "Book Antiqua", Palatino, serif;
+        font-family:"Helvetica", sans-serif;
       }
     </style>
 
@@ -161,31 +161,46 @@ function geolocate() {
   </head>
 
   <body onload="initialize()">
-
-
+    <!--Navbar-->
     <br>
     <br>
     <br>
+      <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+          <ul class="nav nav-sidebar" style="background-color: black">
+            <li class="active"><a href="#">Overview</a></li>
+            <li><a href="#">Reports</a></li>
+            <li><a href="#">Analytics</a></li>
+            <li><a href="#">Export</a></li>
+          </ul>
+        </div>
+ 
     <div class="container" align="center">
 
       <div class="starter-template">
         <h1>PickMeUp</h1>
-        <p class="lead">I'm going...</p>
+        <p class="lead">Where are you going?</p>
 
-        <form method="POST" action=""> {% csrf_token %}
+        <form method="POST" action=""> <!--{% csrf_token %}-->
         <div id="locationField">
   		    <input id="autocomplete1" placeholder="From"
-             onFocus="geolocate()" type="text"></input>
- 		</div>
- 		<div id="locationField">
+             onFocus="geolocate()" type="text" style="border: 2px solid black"></input>
+ 		   </div>
+       <br>
+ 		   <div id="locationField">
   		    <input id="autocomplete2" placeholder="To"
-             onFocus="geolocate()" type="text"></input>
- 		</div>
- 		  {{ form.as_p }}
-          <input type="submit" name="drive" value="I'm driving.">
-          <input type="submit" name="hitch" value="I'm looking for a ride.">
+             onFocus="geolocate()" type="text" style="border: 2px solid black"></input>
+ 		   </div>
+       <br>
+ 		      <!--{{ form.as_p }}-->
+          <!--<input type="submit" name="drive" value="I'm driving.">
+          <input type="submit" name="hitch" value="I'm looking for a ride.">-->
+          <button type="button" class="btn btn-default">I'm Driving</button>
+          <button type="button" class="btn btn-default">I'm looking for a ride.</button>
+
         </form>
-    </div>
+      </div>
     </div><!-- /.container -->
 
 
