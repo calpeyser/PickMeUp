@@ -145,11 +145,19 @@ def show_rides(request):
 	if len(destinationLoc) > 1:
 		raise MultipleObjectsReturned
 
-	new_passenger = Passenger(person=pass_user[0], 
+	passenger = Passenger.objects.filter(person=pass_user[0], 
 		start_loc=originLoc[0], 
 		end_loc=destinationLoc[0])
 
-	new_passenger.save();
+	if len(passenger) > 1:
+		raise MultipleObjectsReturned
+	elif len(passenger) == 0:
+		new_passenger = Passenger(person=pass_user[0], 
+			start_loc=originLoc[0], 
+			end_loc=destinationLoc[0])
+		new_passenger.save();
+	else:
+		new_passenger = passenger[0]
 	
 	originList = originLoc.values()[0]['coordinate'].split(',')
 	destinationList = destinationLoc.values()[0]['coordinate'].split(',')
