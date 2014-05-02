@@ -254,6 +254,7 @@ def add_passenger(request):
 		else:
 			pass_list = ride[0].pending_passengers
 			pass_list.add(user[0])
+			flag = False
 		if flag:
 			C = Context({'ride_text': ride_text, 'flag': flag})
 		else:
