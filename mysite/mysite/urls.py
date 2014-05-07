@@ -41,5 +41,6 @@ urlpatterns = patterns('',
     url(r'^cancel_ride/', 'create_account.views.cancel_ride'),
     url(r'^about/', 'create_account.views.about'),
     url(r'^choose_passenger/', 'create_account.views.choose_passenger'),
+    url(r'^logout/', 'create_account.views.logout'),
 
 ) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

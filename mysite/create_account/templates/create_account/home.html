@@ -6,8 +6,20 @@
     <script type="text/javascript"
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBJAwkd0cOH9KcWXKyhK-TKvkCtmdm7SJk&sensor=false">
     </script>
-    <title>PickMeUp</title>
 
+    <script type="text/javascript"> 
+
+function stopRKey(evt) { 
+  var evt = (evt) ? evt : ((event) ? event : null); 
+  var node = (evt.target) ? evt.target : ((evt.srcElement) ? evt.srcElement : null); 
+  if ((evt.keyCode == 13) && (node.type=="text"))  {return false;} 
+} 
+
+document.onkeypress = stopRKey; 
+
+    </script>
+
+    <title>PickMeUp</title>
         <!-- Obtain Bootstrap style sheet from CDN (online service) so it doesn't have to be on my machine -->
   <!-- Check http://www.bootstrapcdn.com/ for latest version. -->
   <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet">
@@ -18,9 +30,9 @@
       }
     </style>
 
-      <div class="container">
-      <!-- Static navbar -->
-      <div class="navbar navbar-default" role="navigation">
+   <div class="container">
+
+   <div class="navbar navbar-default" role="navigation">
         <div class="container-fluid">
           <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -39,11 +51,11 @@
             </ul>
             <ul class="nav navbar-nav navbar-right">
               <li><a href="/about">About</a></li>
+              <li><a href="/logout">Logout</a></li>
             </ul>
           </div><!--/.nav-collapse -->
         </div><!--/.container-fluid -->
       </div>
-
 
 
     

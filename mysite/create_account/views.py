@@ -581,6 +581,11 @@ def profile(request):
 
 	return render(request, 'create_account/profile.html', {'current_rides_driving': current_rides_driving, 'current_rides_passenger': current_rides_passenger, 'past_rides_driving': past_rides_driving, 'past_rides_passenger': past_rides_passenger, 'ROOT': ROOT});
 
+def logout(request):
+	if 'netid' in request.session:
+		del request.session['netid']
+	return HttpResponseRedirect('https://fed.princeton.edu/cas/logout')
+
 def validId(request):
 	if 'netid' in request.session:
 		return True
