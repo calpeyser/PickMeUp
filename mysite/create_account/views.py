@@ -217,7 +217,7 @@ def show_rides(request):
 		start_obj = Location.objects.filter(pk=start_id).values()[0]
 		end_id = item.end_id
 		end_obj = Location.objects.filter(pk=end_id).values()[0]
-		resVal = str(ride.driver) + ", driving from " + str(start_obj['name']) + ", going to " + str(end_obj['name'])
+		resVal = str(item.driver) + ", driving from " + str(start_obj['name']) + ", going to " + str(end_obj['name'])
 		resKey = item.id
 		result_list.append({resKey : resVal})
 	C = Context({'list': result_list, 'passenger': new_passenger.id})
@@ -249,6 +249,7 @@ def add_passenger(request):
 			raise MultipleObjectsReturned
 		# check if this person is the driver for this ride
 		driver = ride[0].driver
+		flag = True
 		if driver.id == user[0].person.id:
 			flag = "You can't be added!"
 		else:
@@ -276,7 +277,7 @@ def write_message(request):
 				this_participants = message_form.cleaned_data['recipients'];
 				for u in this_participants:
 					this_conversation.participants.add(u);
-				new_message = Message(sender = current_user, title = message_form.cleaned_data['title'], message = message_form.cleaned_data['message'], unread = True, timestamp = datetime.now(), conversation = this_conversation); 
+				new_message = Message(sender = current_user, title = message_form.cleaned_data['title'], message = message_form.cleaned_data['message'], unread = True, timestamp = datetime.now(), conversation = this_conversation);
 				new_message.save();
 				for u in this_participants:
 					new_message.recipients.add(u);
@@ -302,11 +303,12 @@ def write_message_ride(request):
 			this_conversation = Conversation(title=message_form.cleaned_data['title']);
 			this_conversation.save();
 			for u in this_participants:
-				this_conversation.participants.add(u);
+				this_conversation.participants.add(u.person);
+			this_conversation.participants.add(current_user);
 			new_message = Message(sender=current_user, title=message_form.cleaned_data['title'], message=message_form.cleaned_data['message'], unread=True, timestamp=datetime.now(), conversation=this_conversation);
 			new_message.save();
 			for u in this_participants:
-				new_message.recipients.add(u);
+				new_message.recipients.add(u.person);
 			return render(request, 'create_account/home.html')
 	else:
 		message_form = MessageFormRide();
@@ -326,9 +328,10 @@ def write_message_conversation(request):
 		message_form = MessageFormConversation(request.POST);
 		if message_form.is_valid():
 			new_message = Message(sender=current_user, title=message_form.cleaned_data['title'], message=message_form.cleaned_data['message'], unread=True, timestamp=datetime.now(), conversation=this_conversation);
-			new_message.save()
+			new_message.save();
 			for u in this_participants:
 				new_message.recipients.add(u);
+			new_message.recipients.remove(current_user);
 			return render(request, 'create_account/home.html')
 	else:
 		message_form = MessageFormConversation();
@@ -511,7 +514,7 @@ def choose_passenger(request):
 	current_user = User.objects.filter(netid=netid)[0]; # assume unique netids
 
 	this_ride = Ride.objects.filter(id=request.GET.get('ride_id'))[0];
-	this_user = User.objects.filter(id=request.GET.get('user_id'))[0];
+	this_user = Passenger.objects.filter(id=request.GET.get('user_id'))[0];
 
 	option_approve = request.GET.get('Approve', False);
 	option_decline = request.GET.get('Decline', False);

@@ -87,7 +87,7 @@
                       <td>{{message.title}}</td>
                       <td>{{message.sender}}</td>
                       <td>{{message.timestamp}}</td>
-                      <td><button onclick="window.location.href='/write_message_conversation/?id={{message.id}}'">Reply</td>
+                      <td><button onclick="window.location.href='/write_message_conversation/?id={{message.conversation.id}}'">Reply</td>
                     </tr>
                     {%endfor%}
                   </tbody>
