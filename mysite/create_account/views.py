@@ -210,7 +210,7 @@ def show_rides(request):
 		start_obj = Location.objects.filter(pk=start_id).values()[0]
 		end_id = item.end_id
 		end_obj = Location.objects.filter(pk=end_id).values()[0]
-		resVal = str(item.driver) + ", driving from " + str(start_obj['name']) + ", going to " + str(end_obj['name'])
+		resVal = str(item.driver) + " driving from " + str(start_obj['name']) + " to " + str(end_obj['name']) + "\n Date: " + str(item.start_date) + "\n Time: " + str(item.start_time) + "\n Requested Price: " + str(item.payment) + "\n Open Seats Left: " + str(openNum - numPass)
 		resKey = item.id
 		result_list.append({resKey : resVal})
 	C = Context({'list': result_list, 'passenger': new_passenger.id})

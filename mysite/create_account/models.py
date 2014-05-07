@@ -8,7 +8,7 @@ class User(models.Model):
 	rating         = models.BinaryField(null = True);
 
 	def __unicode__(self):
-		return unicode(self.netid)
+		return unicode(self.first_name + " " + self.last_name)
 
 class Location(models.Model):
 	coordinate     = models.CharField(max_length = 100); # replace 50 with actual coordinate length, validate with regexp
