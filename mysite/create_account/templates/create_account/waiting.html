@@ -146,7 +146,7 @@
         }
         swath += temp2;
       }
-      post_to_url('/create_ride/', {'startLoc': start, 'endLoc': end, 'swaths': swath, csrfmiddlewaretoken: '{{ csrf_token }}'});
+      post_to_url('/create_ride/', {'startLoc': start, 'endLoc': end, 'swaths': swath, csrfmiddlewaretoken: '{{ csrf_token }}', 'firstload': 'yes'});
     }
     else {
       alert("Hey, man. Looks like your ride is trying to do something wonky. Like cross the ocean. Which isn't cool. Click ok, and we'll redirect you to home, so you can try again!")

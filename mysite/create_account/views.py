@@ -39,45 +39,43 @@ def ride(request):
 	if not validId(request):
                 return redirect("/")
 	if request.method == 'POST': # If the form has been submitted...
-		start = request.POST.get('startLoc', False)
-		end = request.POST.get('endLoc', False)
-		swath = request.POST.get('swaths', False)
+		flag = request.POST.get('firstload', False)
+       		start = request.POST.get('startLoc', False)
+       		end = request.POST.get('endLoc', False)
+       		swath = request.POST.get('swaths', False)
 
-		print start
-		print end
-		print swath
+       		origin = Location.objects.filter(coordinate=start)
+       		destination = Location.objects.filter(coordinate=end)
+       		if len(origin) > 1:
+       			raise MultipleObjectsReturned
+       		if len(destination) > 1:
+       			raise MultipleObjectsReturned
 
-		origin = Location.objects.filter(coordinate=start)
-		destination = Location.objects.filter(coordinate=end)
-	
-		if len(origin) > 1:
-			raise MultipleObjectsReturned
-		if len(destination) > 1:
-			raise MultipleObjectsReturned
-
-		ride_form = RideForm(request.POST)
-		if ride_form.is_valid():
+		if not flag:
+			ride_form = RideForm(request.POST)
+			if ride_form.is_valid():
             # Process the data in form.cleaned_data - eventually populate this from what you get from the homepage
-			new_ride = Ride(max_seats = ride_form.cleaned_data['max_seats'], 
-				open_seats = ride_form.cleaned_data['open_seats'], 
-				driver = User.objects.filter(netid=request.session['netid'])[0],
-				start = origin[0], start_date = ride_form.cleaned_data['start_date'], 
-				start_time = ride_form.cleaned_data['start_time'], 
-				end = destination[0], 
-				payment = ride_form.cleaned_data['payment'], 
-				swath = swath);
-			new_ride.save();
-			return HttpResponseRedirect('/profile/')
+				new_ride = Ride(max_seats = ride_form.cleaned_data['max_seats'], 
+						open_seats = ride_form.cleaned_data['open_seats'], 
+						driver = User.objects.filter(netid=request.session['netid'])[0],
+						start = origin[0], start_date = ride_form.cleaned_data['start_date'], 
+						start_time = ride_form.cleaned_data['start_time'], 
+						end = destination[0], 
+						payment = ride_form.cleaned_data['payment'], 
+						swath = swath);
+				new_ride.save();
+				return HttpResponseRedirect('/profile/')
+		else:
+			ride_form = RideForm()
 			
 	else:
 		ride_form = RideForm() # An unbound form
 	# pass form to HTML
-	print "Why am I here?!"
 	return render(request, 'create_account/create_ride.html/', {
         'form': ride_form,
         'startLoc': start,
 		'endLoc': end,
-		'swaths': swath, 
+		'swaths': swath,
 	})
     
 # homepage
