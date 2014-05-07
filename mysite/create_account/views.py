@@ -67,13 +67,8 @@ def ride(request):
 				payment = ride_form.cleaned_data['payment'], 
 				swath = swath);
 			new_ride.save();
-			return render(request, 'create_account/create_ride.html/', {
-				'form': ride_form,
-				'startLoc': start,
-				'endLoc': end,
-				'swaths': swath, 
-			})
-			#return HttpResponseRedirect('/create_ride/') # Redirect after POST -- do we want this?
+			return HttpResponseRedirect('/profile/')
+			
 	else:
 		ride_form = RideForm() # An unbound form
 	# pass form to HTML

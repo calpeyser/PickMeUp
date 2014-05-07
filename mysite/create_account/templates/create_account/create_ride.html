@@ -2,6 +2,19 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+
+    <script type="text/javascript"> 
+
+function stopRKey(evt) { 
+  var evt = (evt) ? evt : ((event) ? event : null); 
+  var node = (evt.target) ? evt.target : ((evt.srcElement) ? evt.srcElement : null); 
+  if ((evt.keyCode == 13) && (node.type=="text"))  {return false;} 
+} 
+
+document.onkeypress = stopRKey; 
+
+    </script>
+
     <title>PickMeUp</title>
 
         <!-- Obtain Bootstrap style sheet from CDN (online service) so it doesn't have to be on my machine -->
@@ -45,6 +58,7 @@
 
   <body background="http://diet-moments.com/wp-content/uploads/2012/07/Highway.jpg">
 
+    <div class="container">
     <div class="navbar navbar-default" role="navigation">
         <div class="container-fluid">
           <div class="navbar-header">
