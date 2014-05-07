@@ -25,9 +25,11 @@ class ModelCommaSeparatedChoiceField(forms.ModelMultipleChoiceField):
 
 
 # Create the form class for users
-class UserForm(ModelForm):
-	class Meta:
-		model = User
+class UserForm(forms.Form):
+    last_name = forms.CharField(label="First name");
+    first_name = forms.CharField(label="Last name");
+    phone_number = forms.CharField(label="Phone number");
+
 
 # Create the form class for rides
 
@@ -35,7 +37,7 @@ class RideForm(forms.Form):
 	max_seats = forms.IntegerField(label="How many seats are in your car?                ");
 	open_seats = forms.IntegerField(label="How many of those seats are available?         ");
 	start_date = forms.DateField(label="On what date are you leaving? (mm/dd/yyyy)     ");
-	start_time = forms.TimeField(label="What time are you leaving?                     ");
+	start_time = forms.TimeField(label="What time are you leaving? (HH:MM 24-Hour Format)     ");
 	payment = forms.IntegerField(label="How much would you like to paid, per passenger?");
 
 #Form class for the home page

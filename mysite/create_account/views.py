@@ -540,13 +540,34 @@ def authenticate(request):
 		return render(request, 'create_account/invalid_netid.html',{})
 	# Netid = "charles"
 	# add user to DB if not added before
+	request.session["netid"] = netid
 	test = User.objects.filter(netid=netid)
 	if len(test) == 0:
-		# for now, add default phone number
-		user = User(netid=netid, phone_number="914-555-5555")
-		user.save()
-	request.session["netid"] = netid
+		return redirect('new_user/')
 	return redirect('home/')
+
+def new_user(request):
+	if not validId(request):
+                return redirect("/")
+	netid = request.session["netid"]
+	test = User.objects.filter(netid=netid)
+        if len(test) != 0:
+		return redirect('home/')
+	if request.method == 'POST':
+		new_user_form = UserForm(request.POST)
+		if new_user_form.is_valid():
+			last_name = new_user_form.cleaned_data['last_name']
+			first_name = new_user_form.cleaned_data['first_name']
+			phone_number = new_user_form.cleaned_data['phone_number']
+			new_user = User(netid=netid, phone_number=phone_number, last_name=last_name, first_name=first_name);
+			new_user.save();
+			return redirect('/home/')
+	else:
+		new_user_form = UserForm()
+	return render(request, 'create_account/new_user.html', {
+			'form': new_user_form
+			})
+	
 
 def profile(request):
 	if not validId(request):

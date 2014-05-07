@@ -3,6 +3,8 @@ from django.db import models
 class User(models.Model):
 	netid          = models.CharField(max_length = 50, unique = True);
 	phone_number   = models.CharField(max_length = 12); # eventually, validate with regexp
+	last_name      = models.CharField(max_length = 50);
+	first_name     = models.CharField(max_length = 50);
 	rating         = models.BinaryField(null = True);
 
 	def __unicode__(self):
