@@ -5,6 +5,7 @@ from django.db.models import Q
 from create_account.forms import UserForm, RideForm, HomeForm, MessageForm, MessageFormRide, MessageFormConversation, MessageFormTarget, CancelRideForm
 from create_account.models import User, Location, Ride, Message, Conversation, Passenger
 from message_pruner import *
+from message_maker import *
 from CASClient import *
 import datetime
 from datetime import datetime
@@ -13,8 +14,8 @@ from django.template import Context, RequestContext
 
 
 global ROOT 
-ROOT = 'http://carshare.tigerapps.org/'
-#ROOT = 'http://127.0.0.1:8000/'
+#ROOT = 'http://carshare.tigerapps.org/'
+ROOT = 'http://127.0.0.1:8000/'
 
 # view to show form to populate user data
 def user(request):
@@ -274,7 +275,7 @@ def write_message(request):
 				new_message.save();
 				for u in this_participants:
 					new_message.recipients.add(u);
-				return render(request, 'create_account/home.html')
+				return redirect('/sent/')
 	else:
 		message_form = MessageForm();
 
@@ -302,7 +303,7 @@ def write_message_ride(request):
 			new_message.save();
 			for u in this_participants:
 				new_message.recipients.add(u.person);
-			return render(request, 'create_account/home.html')
+			return redirect('/sent/')
 	else:
 		message_form = MessageFormRide();
 	return render(request, 'create_account/write_message.html', {
@@ -325,7 +326,8 @@ def write_message_conversation(request):
 			for u in this_participants:
 				new_message.recipients.add(u);
 			new_message.recipients.remove(current_user);
-			return render(request, 'create_account/home.html')
+			return redirect('/sent/')
+
 	else:
 		message_form = MessageFormConversation();
 	return render(request, 'create_account/write_message.html/', {
@@ -371,7 +373,6 @@ def delete_message(request):
 	messages = Message.objects.filter(Q(sender=current_user)|Q(recipient=current_user));
 
 	return render(request, 'create_account/inbox.html/', {'messages': messages});
-
 
 def inbox(request):
 	if not validId(request):
@@ -487,11 +488,22 @@ def cancel_ride(request):
 	netid = request.session['netid'];
 	current_user = User.objects.filter(netid=netid)[0]; # assume unique netids
 
-	this_ride = Ride.objects.filter(id=request.GET.get('id'));
+	this_ride = Ride.objects.filter(id=request.GET.get('id'))[0];
 
 	if request.method == 'POST': # If the form has been submitted...
 		cancel_form = CancelRideForm(request.POST)
 		if cancel_form.is_valid():
+
+			# send a message to all the participants 
+			cancel_title = "Ride Canceled By Driver: Automatically Generated Message";
+			cancel_content = "Hello! " + str(current_user) + " doesn't really want to go from " + str(this_ride.start) + " to " + str(this_ride.end) + " on " + str(this_ride.start_date) + " anymore. Guess they don't want to drive you or something. Sorry, bro. Our server is sending you this message, which is pretty cool, yo!"
+			cancel_sender = current_user;
+			cancel_recipients = [];
+			for passenger in this_ride.passengers.all():
+				cancel_recipients.append(passenger.person);
+			message_make(cancel_title, cancel_content, cancel_sender, cancel_recipients);
+
+			# delete the ride
 			if (cancel_form.cleaned_data['cancel'] == True):
 				this_ride.delete();
 			return HttpResponseRedirect('/profile');
@@ -527,10 +539,68 @@ def choose_passenger(request):
 	request.META = {};
 	return driver_future(request); 
 
+def boot_passenger(request):
+	netid = request.session['netid'];
+	current_user = User.objects.filter(netid=netid)[0]; # assume unique netids
+
+	this_ride = Ride.objects.filter(id=request.GET.get('ride_id'))[0];
+	this_user = Passenger.objects.filter(id=request.GET.get('user_id'))[0];
+
+
+	# boot the passenger
+	this_ride.passengers.remove(this_user);
+
+	# send that passenger a message
+	boot_title = "Removal: Automatically Generated Message";
+	boot_content = "Hello! " + str(this_ride.driver) + " has removed you from their ride from " + str(this_ride.start) + " to " + str(this_ride.end) + " on " + str(this_ride.start_date) + ". Our server is sending you this message, which is pretty cool, yo!"
+	boot_sender = current_user;
+	boot_recipients = [this_user.person];
+	message_make(boot_title, boot_content, boot_sender, boot_recipients);
+
+
+	request = HttpResponse();
+	request.path = '/driver_future/'
+	request.method = 'GET';
+	request.session = {'netid': netid};
+	request.GET = {"id": this_ride.id,};
+	request.META = {};
+	return driver_future(request); 
+
+def leave_ride(request):
+	netid = request.session['netid'];
+	current_user = User.objects.filter(netid=netid)[0]; # assume unique netids
+
+	this_ride = Ride.objects.filter(id=request.GET.get('ride_id'))[0];
+	this_user = Passenger.objects.filter(person=current_user)[0];
+
+	# leave the ride
+	print this_ride.passengers.all();
+	passengers = [];
+	for passenger in this_ride.passengers.all():
+		if passenger.person == current_user:
+			this_ride.passengers.remove(passenger);
+
+	# send a message to the driver
+	leave_title = "User Left Ride: Automatically Generated Message";
+	leave_content = "Hello! " + str(current_user) + " has rudely abandoned your ride from " + str(this_ride.start) + " to " + str(this_ride.end) + " on " + str(this_ride.start_date) + ". Our server is sending you this message, which is pretty cool, yo!"
+	leave_sender = current_user;
+	leave_recipients = [this_ride.driver];
+	message_make(leave_title, leave_content, leave_sender, leave_recipients);
+
+	return redirect('/profile/'); 
+
+
+
 def about(request):
 	return render(request, 'create_account/about.html');
 
 def authenticate(request):
+
+	# --- for local development only ---
+	request.session['netid'] = 'peyser'
+	return redirect('/home/')
+
+	# --- for production ---
 	ticket = request.GET.get('ticket',None)
 	if ticket == None:
 		return HttpResponseRedirect('https://fed.princeton.edu/cas/login?service=http://carshare.tigerapps.org/')
@@ -575,13 +645,22 @@ def profile(request):
 	netid = request.session['netid'];
 	current_user = User.objects.filter(netid=netid)[0]; # assume unique netids
 
-	# Get the rides that the user is currently driving
+	# We pass in a list of "pairs", where a pair contains both the ride and a list of the pending passengers.
+	# We to do it like this because the template cannot get the list of passengers from the ride by itself.
+	# "pairs" are represented by a dict
+	current_rides_driving_pairs = [];
 	current_rides_driving   = Ride.objects.filter(driver=current_user, start_date__gt=date.today());
+	for ride in current_rides_driving:
+		entry = {};
+		entry['ride'] = ride;
+		entry['pending'] = ride.pending_passengers.all();
+		current_rides_driving_pairs.append(entry);
+
 	# Get the rides that the user is currently a passenger in
 	current_rides_passenger = [];
 	for ride in Ride.objects.filter(start_date__gt=date.today()):
 		for passenger in ride.passengers.all():
-			if current_user == passenger:
+			if current_user == passenger.person:
 				current_rides_passenger.append(ride);
 
 	# Get the rides that the user drove in the past
@@ -590,10 +669,10 @@ def profile(request):
 	past_rides_passenger = [];
 	for ride in Ride.objects.filter(start_date__lt=date.today()):
 		for passenger in ride.passengers.all():
-			if current_user == passenger:
+			if current_user == passenger.person:
 				past_rides_passenger.append(ride);
 
-	return render(request, 'create_account/profile.html', {'current_rides_driving': current_rides_driving, 'current_rides_passenger': current_rides_passenger, 'past_rides_driving': past_rides_driving, 'past_rides_passenger': past_rides_passenger, 'ROOT': ROOT});
+	return render(request, 'create_account/profile.html', {'current_rides_driving_pairs': current_rides_driving_pairs, 'current_rides_passenger': current_rides_passenger, 'past_rides_driving': past_rides_driving, 'past_rides_passenger': past_rides_passenger, 'ROOT': ROOT});
 
 def logout(request):
 	if 'netid' in request.session:

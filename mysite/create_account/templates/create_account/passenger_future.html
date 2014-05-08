@@ -63,6 +63,13 @@
       <input type="hidden" name="user" value="{{this_driver.id}}">
       <input type="submit" value="Message the driver of this ride" class="btn btn-default navbar-btn">
     </form>
+
+
+    <form action="{{ROOT}}leave_ride" method="GET">
+      <input type="hidden" name="ride_id" value="{{this_ride.id}}">
+      <input type="submit" value="Leave this ride" class="btn btn-default navbar-btn">
+    </form>
+
   </div></div></div></div>
 
 
