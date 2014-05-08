@@ -88,7 +88,7 @@ class MessageFormTarget(forms.Form):
 	message = forms.CharField(widget=forms.Textarea);
 
 class CancelRideForm(forms.Form):
-	cancel = forms.BooleanField(help_text="Are you sure you would like to cancel this ride?");
+	cancel = forms.BooleanField();
 
 
 

@@ -165,6 +165,8 @@ def show_rides(request):
 	for ride in query:
 		# don't use ride that's a already full
 		openNum = int(ride.open_seats)
+		# this is playing w/ pending passengers for testing
+		# should be switched to actual passengers after merge w/ Cal
 		if ride.passengers.all():
 			numPass = len(ride.passengers.all())
 		else:
@@ -518,26 +520,23 @@ def passenger_future(request):
 
 	return render(request, 'create_account/passenger_future.html', {'this_ride': this_ride, 'this_driver': this_driver, 'this_passengers': this_passengers, 'this_start': this_start, 'this_end': this_end, 'this_start_date': this_start_date, 'this_start_time': this_start_time, "ROOT":ROOT});
 
-def cancel_ride(request):
+def cancel_ride_execute(request):
 	if not validId(request):
                 return redirect("/")
 	netid = request.session['netid'];
 	current_user = User.objects.filter(netid=netid)[0]; # assume unique netids
 
-	this_ride = Ride.objects.filter(id=request.GET.get('id'))[0];
+	this_ride = Ride.objects.filter(id=request.GET.get('id'));
 
-	if request.method == 'POST': # If the form has been submitted...
-		cancel_form = CancelRideForm(request.POST)
-		if cancel_form.is_valid():
+	if request.GET.get('action') == 'Cancel Ride':
+		this_ride.delete();
+		
+		return HttpResponseRedirect("/profile");
+	if request.GET.get('action') == 'Go Back':
+		return HttpResponseRedirect("/profile");
 
-			# send a message to all the participants 
-			cancel_title = "Ride Canceled By Driver: Automatically Generated Message";
-			cancel_content = "Hello! " + str(current_user) + " doesn't really want to go from " + str(this_ride.start) + " to " + str(this_ride.end) + " on " + str(this_ride.start_date) + " anymore. Guess they don't want to drive you or something. Sorry, bro. Our server is sending you this message, which is pretty cool, yo!"
-			cancel_sender = current_user;
-			cancel_recipients = [];
-			for passenger in this_ride.passengers.all():
-				cancel_recipients.append(passenger.person);
-			message_make(cancel_title, cancel_content, cancel_sender, cancel_recipients);
+def cancel_ride(request):
+	return render(request, 'create_account/cancel_ride.html', {'this_ride_id': request.GET.get('id')});
 
 			# delete the ride
 			if (cancel_form.cleaned_data['cancel'] == True):
@@ -633,8 +632,8 @@ def about(request):
 def authenticate(request):
 
 	# --- for local development only ---
-#	request.session['netid'] = 'peyser'
-#	return redirect('/home/')
+	#request.session['netid'] = 'peyser'
+	#return redirect('/home/')
 
 	# --- for production ---
 	ticket = request.GET.get('ticket',None)
@@ -681,11 +680,8 @@ def profile(request):
 	netid = request.session['netid'];
 	current_user = User.objects.filter(netid=netid)[0]; # assume unique netids
 
-	# We pass in a list of "pairs", where a pair contains both the ride and a list of the pending passengers.
-	# We to do it like this because the template cannot get the list of passengers from the ride by itself.
-	# "pairs" are represented by a dict
-	current_rides_driving_pairs = [];
-	current_rides_driving   = Ride.objects.filter(driver=current_user, start_date__gte=date.today());
+	# Get the rides that the user is currently driving
+	current_rides_driving   = Ride.objects.filter(driver=current_user, start_date__gt=date.today());
 	for ride in current_rides_driving:
 		entry = {};
 		entry['ride'] = ride;
@@ -696,7 +692,7 @@ def profile(request):
 	current_rides_passenger = [];
 	for ride in Ride.objects.filter(start_date__gt=date.today()):
 		for passenger in ride.passengers.all():
-			if current_user == passenger.person:
+			if current_user == passenger:
 				current_rides_passenger.append(ride);
 
 	# Get the rides that the user drove in the past
@@ -705,10 +701,10 @@ def profile(request):
 	past_rides_passenger = [];
 	for ride in Ride.objects.filter(start_date__lt=date.today()):
 		for passenger in ride.passengers.all():
-			if current_user == passenger.person:
+			if current_user == passenger:
 				past_rides_passenger.append(ride);
 
-	return render(request, 'create_account/profile.html', {'current_rides_driving_pairs': current_rides_driving_pairs, 'current_rides_passenger': current_rides_passenger, 'past_rides_driving': past_rides_driving, 'past_rides_passenger': past_rides_passenger, 'ROOT': ROOT});
+	return render(request, 'create_account/profile.html', {'current_rides_driving': current_rides_driving, 'current_rides_passenger': current_rides_passenger, 'past_rides_driving': past_rides_driving, 'past_rides_passenger': past_rides_passenger, 'ROOT': ROOT});
 
 def logout(request):
 	if 'netid' in request.session:

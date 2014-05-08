@@ -1,56 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <title>Inbox</title>
+{% extends "base.html" %}
 
-        <!-- Obtain Bootstrap style sheet from CDN (online service) so it doesn't have to be on my machine -->
-  <!-- Check http://www.bootstrapcdn.com/ for latest version. -->
-  <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet">
-   <style>
-      body {
-        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
-        font-family:"Palatino Linotype", "Book Antiqua", Palatino, serif;
-      }
-    </style>
-  </head>
+{% block content%}
+  <div class="container" align="center">
 
-  <body>
 
-    <div class="container">
+<div class="container" align="center">
 
-    <div class="navbar navbar-default" role="navigation">
-        <div class="container-fluid">
-          <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-              <span class="sr-only">Toggle navigation</span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="/home">PickMeUp</a>
-          </div>
-          <div class="navbar-collapse collapse">
-            <ul class="nav navbar-nav">
-              <li><a href="/profile">Profile</a></li>
-              <li><a href="/inbox">Inbox</a></li>
-              <li><a href="/write_message">Write Message</a></li>
-            </ul>
-            <ul class="nav navbar-nav navbar-right">
-              <li><a href="/about">About</a></li>
-              <li><a href="/logout">Logout</a></li>
-            </ul>
-          </div><!--/.nav-collapse -->
-        </div><!--/.container-fluid -->
-      </div>
+      <div class="starter-template" style="background-color: black; border: 3px solid #999999; border-radius: 25px; width: 600px; padding-bottom: 20px; position: relative">
+        <h1 style="color:white;">Are You Sure?</h1>
+        <p class="lead" style="color: white">A message will be sent to all participants that the ride has been canceled.</p>
 
-        <form method="POST" action=""> {% csrf_token %}
-          {{form.as_p}} 
-          <input type="submit" value="Submit">
+        <form method="GET" action="/cancel_ride_execute"> {% csrf_token %}
+          <input type="hidden" name="id" value="{{this_ride_id}}">
+          <input type="submit" name="action" value="Cancel Ride" class="btn btn-default">
+          <input type="submit" name="action"value="Go Back" class="btn btn-default">
         </form>
-
-
-
-
 
   </body>
 </html>
+{% endblock %}
