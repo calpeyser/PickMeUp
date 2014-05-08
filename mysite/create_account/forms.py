@@ -1,4 +1,4 @@
-from django.forms import ModelForm
+from django.forms import ModelForm, ValidationError
 from django import forms
 from django.core import urlresolvers
 from django.db import models
@@ -7,7 +7,7 @@ import autocomplete_light
 
 autocomplete_light.autodiscover()
 
-
+MAX_MAX_SEATS = 10000
 
 #------------------------------------------------------------------------------------------------------
 # PUT CUSTOM FORM ELEMENTS HERE
@@ -39,6 +39,24 @@ class RideForm(forms.Form):
 	start_date = forms.DateField(label="On what date are you leaving? (mm/dd/yyyy)     ");
 	start_time = forms.TimeField(label="What time are you leaving? (HH:MM 24-Hour Format)     ");
 	payment = forms.CharField(label="How would you like to be reimbursed, per passenger?");
+
+        def clean(self):
+            cleaned_data = super(RideForm, self).clean()
+            errors = []
+            
+            if cleaned_data['max_seats'] < 0:
+                errors.append(ValidationError('Please enter a valid number for Maximum Seats'))
+            if cleaned_data['max_seats'] > MAX_MAX_SEATS:
+                errors.append(ValidationError('Is your car really that big?'))
+            if cleaned_data['open_seats'] < 0:
+                errors.append(ValidationError('Please enter a valid number for Open Seats'))
+            if cleaned_data['open_seats'] > cleaned_data['max_seats']:
+                errors.append(ValidationError('Open Seats cannot be larger than Max Seats'))
+
+            if errors:
+                raise ValidationError(errors)
+            
+            return cleaned_data
 
 #Form class for the home page
 class HomeForm(ModelForm):
