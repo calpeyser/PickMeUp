@@ -62,7 +62,6 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
-# ---- for production ----
 DATABASES = {
      'default': {
          'ENGINE': 'django.db.backends.sqlite3',
@@ -90,7 +89,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-TIME_FORMAT = 'P'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
@@ -99,4 +97,3 @@ STATIC_URL = '/static/'
 
 # Cal: I'm adding this to support autocomplete.  
 TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'create_account/templates')]
-
