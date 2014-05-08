@@ -135,10 +135,10 @@
       var distance = 0
       var legs = result.routes[0].legs
       for (var i = 0; i < legs.length; i++) {
-        distance = distance + legs[i].distance
+        distance = distance + legs[i].distance.value
       }
       console.log(distance);
-      radius = distance*(.02)
+      radius = distance*(.02)/1000
       var boxes = rboxer.box(path, radius);
       
       for (var i = 0; i < boxes.length; i++) {
