@@ -132,8 +132,14 @@
       //alert("Driving is legit and stuff, yo.")
       // Box the overview path of the first route
       var path = result.routes[0].overview_path;
+      var distance = 0
+      var legs = result.routes[0].legs
+      for (var i = 0; i < legs.length; i++) {
+        distance = distance + legs[i].distance
+      }
       console.log(distance);
-      var boxes = rboxer.box(path, distance);
+      radius = distance*(.02)
+      var boxes = rboxer.box(path, radius);
       
       for (var i = 0; i < boxes.length; i++) {
         var bounds = boxes[i];
