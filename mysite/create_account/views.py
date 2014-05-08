@@ -162,6 +162,7 @@ def show_rides(request):
 	results = []
 	# make list of acceptable rides
 	for ride in query:
+		# don't use ride that's a already full
 		openNum = int(ride.open_seats)
 		if ride.passengers.all():
 			numPass = len(ride.passengers.all())
@@ -251,15 +252,28 @@ def add_passenger(request):
 			raise MultipleObjectsReturned
 		# check if this person is the driver for this ride
 		driver = item.driver
-		flag = True
+		flagDrive = False
+		flagPass = False
 		if driver.id == user[0].person.id:
 			flag = "You can't be added!"
+		# check if this person is a passenger for this ride
+		passengers = item.passengers.all()
+		for dude in passengers:
+			if dude.person.id == user[0].person.id:
+				flagPass = "You can't be added b/c passenger!"
+				break
+		pend_pass = item.pending_passengers.all()
+		for dude in pend_pass:
+                        if dude.person.id == user[0].person.id:
+				flagPass = "You can't be added b/c pending!"
+				break
 		else:
 			pass_list = item.pending_passengers
 			pass_list.add(user[0])
-			flag = False
-		if flag:
-			C = Context({'ride_text': ride_text, 'flag': flag})
+		if flagDrive:
+			C = Context({'ride_text': ride_text, 'flagDrive': flagDrive})
+		elif flagPass:
+			C = Context({'ride_text': ride_text, 'flagPass': flagPass})
 		else:
 			C = Context({'ride_text': ride_text})
 	return render(request, 'create_account/added.html', C)

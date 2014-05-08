@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+y<!DOCTYPE html>
 <html lang="en">
   <head>
     <!-- Load Google Maps API --> 
@@ -73,15 +73,22 @@
     <div class="container">
 
       <div class="starter-template">
-        {% if flag %}
+        {% if flagDrive %}
             <h1>Oh no!!</h1>
           <p class="lead"> You're the driver of {{ride_text}}! </p>
           <p class="lead"> You can't be added to your own ride, silly!!</p>
-        {% else %}
+        {% elif flagPass %}
+	  <h1>Oh no!!</h1>
+          <p class="lead"> You're already signed up as a passenger of {{ride_text}}! </p>
+          <p class="lead"> You can't be added to the same ride twice, silly!!</p>
+	{% else %}
           <h1>Congrats!</h1>
           <p class="lead"> The driver of {{ride_text}} has been notified of your intent to join them! </p>
           <p class="lead"> You will be notified once the driver approves you to join their trip! </p>
         {% endif %}
+	  <form action="/profile/" method="get">
+	    <input type="submit" value="Ok, take me to my profile!" class="btn btn-default"/>
+         </form>
       </div>
 
     </div><!-- /.container -->
