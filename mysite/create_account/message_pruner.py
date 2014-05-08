@@ -53,10 +53,14 @@ class message_pruner:
 		conversations = {};
 		for m in self.messages:
 			if m.conversation in conversations:
-				conversations[m.conversation].append(m);
+				pass;
 			else:
 				conversations[m.conversation] = [];
-				conversations[m.conversation].append(m);
+
+		# populate lists
+		for c in conversations:
+			conversations[c] = Message.objects.filter(conversation=c);
+
 		# sort by timestamp
 		for c in conversations:
 			conversations[c] = sorted(conversations[c], key=lambda message: message.timestamp);
@@ -65,6 +69,10 @@ class message_pruner:
 		# for each message, adjust the content to reflect what should be written in the inbox
 		self.messages = [];
 		for c in conversations:
+			# starter = conversations[c][0];
+			# starter_message = starter.message;
+			# conversations[c][0].message = "On " + str(starter.timestamp) + ", " + str(starter.timestamp) + " wrote:\\n";
+			# conversations[c][0].message += starter_message;
 			for m in conversations[c][1:]:
 				conversations[c][0].message += "\\n \\n-----------------------------------------------------------------";
 				conversations[c][0].message += "\\n On " + str(m.timestamp) + ", " + str(m.sender) + " wrote: \\n";
