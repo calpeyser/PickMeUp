@@ -37,7 +37,7 @@ class Ride(models.Model):
 	start_time             = models.TimeField(null = True);
 	end                    = models.ForeignKey(Location, related_name='end_of');
 	swath                  = models.CharField(max_length = 1000); # might want to tweak this but eh?
-	payment                = models.IntegerField(null = True);
+	payment                = models.CharField(max_length = 1000);
 
 	def __unicode__(self):
 		return unicode(self.swath)

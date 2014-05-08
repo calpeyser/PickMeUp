@@ -38,7 +38,7 @@ class RideForm(forms.Form):
 	open_seats = forms.IntegerField(label="How many of those seats are available?         ");
 	start_date = forms.DateField(label="On what date are you leaving? (mm/dd/yyyy)     ");
 	start_time = forms.TimeField(label="What time are you leaving? (HH:MM 24-Hour Format)     ");
-	payment = forms.IntegerField(label="How much would you like to paid, per passenger?");
+	payment = forms.CharField(label="How would you like to be reimbursed, per passenger?");
 
 #Form class for the home page
 class HomeForm(ModelForm):
