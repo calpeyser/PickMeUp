@@ -63,20 +63,20 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
 # ---- for production ----
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': os.path.join(BASE_DIR, '/var/www/PickMeUp/mysite/db.sqlite3'),
-#     }
-# }
-
-# ---- for development ----
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, '/Users/calpeyser/Desktop/EC2/PickMeUp/mysite/db.sqlite3'),
+     'default': {
+         'ENGINE': 'django.db.backends.sqlite3',
+         'NAME': os.path.join(BASE_DIR, '/var/www/PickMeUp/mysite/db.sqlite3'),
     }
 }
+
+# ---- for development ----
+#DATABASES = {
+ #   'default': {
+ #       'ENGINE': 'django.db.backends.sqlite3',
+ #       'NAME': os.path.join(BASE_DIR, '/Users/calpeyser/Desktop/EC2/PickMeUp/mysite/db.sqlite3'),
+ #   }
+#}
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
 
