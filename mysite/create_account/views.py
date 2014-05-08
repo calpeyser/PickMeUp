@@ -5,7 +5,6 @@ from django.db.models import Q
 from create_account.forms import UserForm, RideForm, HomeForm, MessageForm, MessageFormRide, MessageFormConversation, MessageFormTarget, CancelRideForm
 from create_account.models import User, Location, Ride, Message, Conversation, Passenger
 from message_pruner import *
-from message_maker import *
 from CASClient import *
 import datetime
 from datetime import datetime
@@ -163,8 +162,9 @@ def show_rides(request):
 	results = []
 	# make list of acceptable rides
 	for ride in query:
-		# don't use ride that's a already full
 		openNum = int(ride.open_seats)
+		# this is playing w/ pending passengers for testing
+		# should be switched to actual passengers after merge w/ Cal
 		if ride.passengers.all():
 			numPass = len(ride.passengers.all())
 		else:
@@ -210,7 +210,7 @@ def show_rides(request):
 		start_obj = Location.objects.filter(pk=start_id).values()[0]
 		end_id = item.end_id
 		end_obj = Location.objects.filter(pk=end_id).values()[0]
-		resVal = [str(item.driver) + " driving from " + str(start_obj['name']) + " to " + str(end_obj['name']), "Date: " + str(item.start_date), "Time: " + str(item.start_time), "Requested Price: " + str(item.payment), "Open Seats Left: " + str(openNum - numPass)]
+		resVal = str(item.driver) + ", driving from " + str(start_obj['name']) + ", going to " + str(end_obj['name'])
 		resKey = item.id
 		result_list.append({resKey : resVal})
 	C = Context({'list': result_list, 'passenger': new_passenger.id})
@@ -220,18 +220,9 @@ def confirm(request):
 	if not validId(request):
                 return redirect("/")
 	if request.method == 'POST':
+		print request.POST
+		ride_text = request.POST.get('ride_text', False)
 		ride_id = request.POST.get('ride_id', False)
-		item = Ride.objects.filter(id=ride_id)[0]
-		openNum = int(item.open_seats)
-                if item.passengers.all():
-                        numPass = len(item.passengers.all())
-                else:
-			numPass = 0
-		start_id = item.start_id
-		start_obj = Location.objects.filter(pk=start_id).values()[0]
-                end_id = item.end_id
-		end_obj = Location.objects.filter(pk=end_id).values()[0]
-		ride_text = [str(item.driver) + " driving from " + str(start_obj['name']) + " to " + str(end_obj['name']), "Date: " + str(item.start_date), "Time: " + str(item.start_time), "Requested Price: " + str(item.payment), "Open Seats Left: " + str(openNum - numPass)]
 		passenger = request.POST.get('passenger', False)
 		C = Context({'ride_text': ride_text, 'ride_id': ride_id, 'passenger': passenger})
 	return render(request, 'create_account/confirm.html', C)
@@ -241,40 +232,25 @@ def add_passenger(request):
                 return redirect("/")
 	if request.method == 'POST':
 		ride_id = request.POST.get('ride_id', False)
+		ride_text = request.POST.get('ride_text', False)
 		pass_id = request.POST.get('passenger', False)
-		item = Ride.objects.filter(id=ride_id)[0]
-		start_id = item.start_id
-                start_obj = Location.objects.filter(pk=start_id).values()[0]
-                end_id = item.end_id
-                end_obj = Location.objects.filter(pk=end_id).values()[0]
-                ride_text = "the ride from " + str(start_obj['name']) + " to " + str(end_obj['name']) + " on " + str(item.start_date) + " at " + str(item.start_time)
+		ride = Ride.objects.filter(id=ride_id)
 		user = Passenger.objects.filter(id=pass_id)
+		if len(ride) > 1:
+			raise MultipleObjectsReturned
 		if len(user) > 1:
 			raise MultipleObjectsReturned
 		# check if this person is the driver for this ride
-		driver = item.driver
-		flagDrive = False
-		flagPass = False
+		driver = ride[0].driver
+		flag = True
 		if driver.id == user[0].person.id:
 			flag = "You can't be added!"
-		# check if this person is a passenger for this ride
-		passengers = item.passengers.all()
-		for dude in passengers:
-			if dude.person.id == user[0].person.id:
-				flagPass = "You can't be added b/c passenger!"
-				break
-		pend_pass = item.pending_passengers.all()
-		for dude in pend_pass:
-                        if dude.person.id == user[0].person.id:
-				flagPass = "You can't be added b/c pending!"
-				break
 		else:
-			pass_list = item.pending_passengers
+			pass_list = ride[0].pending_passengers
 			pass_list.add(user[0])
-		if flagDrive:
-			C = Context({'ride_text': ride_text, 'flagDrive': flagDrive})
-		elif flagPass:
-			C = Context({'ride_text': ride_text, 'flagPass': flagPass})
+			flag = False
+		if flag:
+			C = Context({'ride_text': ride_text, 'flag': flag})
 		else:
 			C = Context({'ride_text': ride_text})
 	return render(request, 'create_account/added.html', C)
@@ -298,7 +274,7 @@ def write_message(request):
 				new_message.save();
 				for u in this_participants:
 					new_message.recipients.add(u);
-				return redirect('/sent/')
+				return render(request, 'create_account/home.html')
 	else:
 		message_form = MessageForm();
 
@@ -326,7 +302,7 @@ def write_message_ride(request):
 			new_message.save();
 			for u in this_participants:
 				new_message.recipients.add(u.person);
-			return redirect('/sent/')
+			return render(request, 'create_account/home.html')
 	else:
 		message_form = MessageFormRide();
 	return render(request, 'create_account/write_message.html', {
@@ -349,8 +325,7 @@ def write_message_conversation(request):
 			for u in this_participants:
 				new_message.recipients.add(u);
 			new_message.recipients.remove(current_user);
-			return redirect('/sent/')
-
+			return render(request, 'create_account/home.html')
 	else:
 		message_form = MessageFormConversation();
 	return render(request, 'create_account/write_message.html/', {
@@ -396,6 +371,7 @@ def delete_message(request):
 	messages = Message.objects.filter(Q(sender=current_user)|Q(recipient=current_user));
 
 	return render(request, 'create_account/inbox.html/', {'messages': messages});
+
 
 def inbox(request):
 	if not validId(request):
@@ -505,37 +481,24 @@ def passenger_future(request):
 
 	return render(request, 'create_account/passenger_future.html', {'this_ride': this_ride, 'this_driver': this_driver, 'this_passengers': this_passengers, 'this_start': this_start, 'this_end': this_end, 'this_start_date': this_start_date, 'this_start_time': this_start_time, "ROOT":ROOT});
 
-def cancel_ride(request):
+def cancel_ride_execute(request):
 	if not validId(request):
                 return redirect("/")
 	netid = request.session['netid'];
 	current_user = User.objects.filter(netid=netid)[0]; # assume unique netids
 
-	this_ride = Ride.objects.filter(id=request.GET.get('id'))[0];
+	this_ride = Ride.objects.filter(id=request.GET.get('id'));
 
-	if request.method == 'POST': # If the form has been submitted...
-		cancel_form = CancelRideForm(request.POST)
-		if cancel_form.is_valid():
+	if request.GET.get('action') == 'Cancel Ride':
+		this_ride.delete();
+		
+		return HttpResponseRedirect("/profile");
+	if request.GET.get('action') == 'Go Back':
+		return HttpResponseRedirect("/profile");
 
-			# send a message to all the participants 
-			cancel_title = "Ride Canceled By Driver: Automatically Generated Message";
-			cancel_content = "Hello! " + str(current_user) + " doesn't really want to go from " + str(this_ride.start) + " to " + str(this_ride.end) + " on " + str(this_ride.start_date) + " anymore. Guess they don't want to drive you or something. Sorry, bro. Our server is sending you this message, which is pretty cool, yo!"
-			cancel_sender = current_user;
-			cancel_recipients = [];
-			for passenger in this_ride.passengers.all():
-				cancel_recipients.append(passenger.person);
-			message_make(cancel_title, cancel_content, cancel_sender, cancel_recipients);
+def cancel_ride(request):
+	return render(request, 'create_account/cancel_ride.html', {'this_ride_id': request.GET.get('id')});
 
-			# delete the ride
-			if (cancel_form.cleaned_data['cancel'] == True):
-				this_ride.delete();
-			return HttpResponseRedirect('/profile');
-	else:
-		cancel_form = CancelRideForm() # An unbound form
-
-	return render(request, 'create_account/cancel_ride.html', {
-        'form': cancel_form,
-    })
 
 def choose_passenger(request):
 	netid = request.session['netid'];
@@ -562,82 +525,33 @@ def choose_passenger(request):
 	request.META = {};
 	return driver_future(request); 
 
-def boot_passenger(request):
-	netid = request.session['netid'];
-	current_user = User.objects.filter(netid=netid)[0]; # assume unique netids
-
-	this_ride = Ride.objects.filter(id=request.GET.get('ride_id'))[0];
-	this_user = Passenger.objects.filter(id=request.GET.get('user_id'))[0];
-
-
-	# boot the passenger
-	this_ride.passengers.remove(this_user);
-
-	# send that passenger a message
-	boot_title = "Removal: Automatically Generated Message";
-	boot_content = "Hello! " + str(this_ride.driver) + " has removed you from their ride from " + str(this_ride.start) + " to " + str(this_ride.end) + " on " + str(this_ride.start_date) + ". Our server is sending you this message, which is pretty cool, yo!"
-	boot_sender = current_user;
-	boot_recipients = [this_user.person];
-	message_make(boot_title, boot_content, boot_sender, boot_recipients);
-
-
-	request = HttpResponse();
-	request.path = '/driver_future/'
-	request.method = 'GET';
-	request.session = {'netid': netid};
-	request.GET = {"id": this_ride.id,};
-	request.META = {};
-	return driver_future(request); 
-
-def leave_ride(request):
-	netid = request.session['netid'];
-	current_user = User.objects.filter(netid=netid)[0]; # assume unique netids
-
-	this_ride = Ride.objects.filter(id=request.GET.get('ride_id'))[0];
-	this_user = Passenger.objects.filter(person=current_user)[0];
-
-	# leave the ride
-	print this_ride.passengers.all();
-	passengers = [];
-	for passenger in this_ride.passengers.all():
-		if passenger.person == current_user:
-			this_ride.passengers.remove(passenger);
-
-	# send a message to the driver
-	leave_title = "User Left Ride: Automatically Generated Message";
-	leave_content = "Hello! " + str(current_user) + " has rudely abandoned your ride from " + str(this_ride.start) + " to " + str(this_ride.end) + " on " + str(this_ride.start_date) + ". Our server is sending you this message, which is pretty cool, yo!"
-	leave_sender = current_user;
-	leave_recipients = [this_ride.driver];
-	message_make(leave_title, leave_content, leave_sender, leave_recipients);
-
-	return redirect('/profile/'); 
-
-
-
 def about(request):
 	return render(request, 'create_account/about.html');
 
 def authenticate(request):
 
-	# --- for local development only ---
-	request.session['netid'] = 'peyser'
-	return redirect('/home/')
+	# for development
+	request.session["netid"] = "peyser";
+	return redirect('home/');
 
-	# --- for production ---
-	ticket = request.GET.get('ticket',None)
-	if ticket == None:
-		return HttpResponseRedirect('https://fed.princeton.edu/cas/login?service=http://carshare.tigerapps.org/')
-	C = CASClient()
-	netid = C.Validate(ticket)
-	if netid == None:
-		return render(request, 'create_account/invalid_netid.html',{})
-	# Netid = "charles"
-	# add user to DB if not added before
-	request.session["netid"] = netid
-	test = User.objects.filter(netid=netid)
-	if len(test) == 0:
-		return redirect('new_user/')
-	return redirect('home/')
+
+	# I'm commenting all of this in order to generate a merge conflit so we don't screw up.  See how much of a 
+	# good guy I am? You're welcome.
+
+	# ticket = request.GET.get('ticket',None)
+	# if ticket == None:
+	# 	return HttpResponseRedirect('https://fed.princeton.edu/cas/login?service=http://carshare.tigerapps.org/')
+	# C = CASClient()
+	# netid = C.Validate(ticket)
+	# if netid == None:
+	# 	return render(request, 'create_account/invalid_netid.html',{})
+	# # Netid = "charles"
+	# # add user to DB if not added before
+	# request.session["netid"] = netid
+	# test = User.objects.filter(netid=netid)
+	# if len(test) == 0:
+	# 	return redirect('new_user/')
+	# return redirect('home/')
 
 def new_user(request):
 	if not validId(request):
@@ -668,22 +582,13 @@ def profile(request):
 	netid = request.session['netid'];
 	current_user = User.objects.filter(netid=netid)[0]; # assume unique netids
 
-	# We pass in a list of "pairs", where a pair contains both the ride and a list of the pending passengers.
-	# We to do it like this because the template cannot get the list of passengers from the ride by itself.
-	# "pairs" are represented by a dict
-	current_rides_driving_pairs = [];
+	# Get the rides that the user is currently driving
 	current_rides_driving   = Ride.objects.filter(driver=current_user, start_date__gt=date.today());
-	for ride in current_rides_driving:
-		entry = {};
-		entry['ride'] = ride;
-		entry['pending'] = ride.pending_passengers.all();
-		current_rides_driving_pairs.append(entry);
-
 	# Get the rides that the user is currently a passenger in
 	current_rides_passenger = [];
 	for ride in Ride.objects.filter(start_date__gt=date.today()):
 		for passenger in ride.passengers.all():
-			if current_user == passenger.person:
+			if current_user == passenger:
 				current_rides_passenger.append(ride);
 
 	# Get the rides that the user drove in the past
@@ -692,10 +597,10 @@ def profile(request):
 	past_rides_passenger = [];
 	for ride in Ride.objects.filter(start_date__lt=date.today()):
 		for passenger in ride.passengers.all():
-			if current_user == passenger.person:
+			if current_user == passenger:
 				past_rides_passenger.append(ride);
 
-	return render(request, 'create_account/profile.html', {'current_rides_driving_pairs': current_rides_driving_pairs, 'current_rides_passenger': current_rides_passenger, 'past_rides_driving': past_rides_driving, 'past_rides_passenger': past_rides_passenger, 'ROOT': ROOT});
+	return render(request, 'create_account/profile.html', {'current_rides_driving': current_rides_driving, 'current_rides_passenger': current_rides_passenger, 'past_rides_driving': past_rides_driving, 'past_rides_passenger': past_rides_passenger, 'ROOT': ROOT});
 
 def logout(request):
 	if 'netid' in request.session:
