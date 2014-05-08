@@ -1,10 +1,12 @@
+import autocomplete_light
+autocomplete_light.autodiscover()
+
 from django.conf.urls import patterns, include, url
 from django.conf.urls.static import static
 from django.conf import settings
 
 import CASClient
-import autocomplete_light
-autocomplete_light.autodiscover()
+
 
 from django.contrib import admin
 admin.autodiscover()
@@ -17,6 +19,7 @@ urlpatterns = patterns('',
     # url(r'^$', 'mysite.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
 
+    url(r'^autocomplete/', include('autocomplete_light.urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^create_account/', 'create_account.views.user'),
     url(r'^home/', 'create_account.views.home'),
@@ -33,7 +36,6 @@ urlpatterns = patterns('',
 	url(r'^delete_message/', 'create_account.views.delete_message'),
     url(r'^sent', 'create_account.views.sent'),
     url(r'^profile/', 'create_account.views.profile'),
-    url(r'^autocomplete/', include('autocomplete_light.urls')),
     url(r'^driver_future/', 'create_account.views.driver_future'),
     url(r'^driver_past/', 'create_account.views.driver_past'),
     url(r'^passenger_future/', 'create_account.views.passenger_future'),

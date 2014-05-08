@@ -95,5 +95,11 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+STATIC_ROOT = '/var/www/PickMeUp/mysite/mysite/static/'
+
+#STATICFILES_DIRS = (
+#    os.path.join(BASE_DIR, "static"),
+#)
+
 # Cal: I'm adding this to support autocomplete.  
 TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'create_account/templates')]

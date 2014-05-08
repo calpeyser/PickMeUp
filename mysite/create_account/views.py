@@ -14,8 +14,8 @@ from django.template import Context, RequestContext
 
 
 global ROOT 
-#ROOT = 'http://carshare.tigerapps.org/'
-ROOT = 'http://127.0.0.1:8000/'
+ROOT = 'http://carshare.tigerapps.org/'
+#ROOT = 'http://127.0.0.1:8000/'
 
 # view to show form to populate user data
 def user(request):
@@ -202,7 +202,20 @@ def show_rides(request):
 			y_dist_dest = abs(destination[1] - float(coordS[1]))
 			origin_dist = x_dist_origin*x_dist_origin + y_dist_origin*y_dist_origin
 			dest_dist = x_dist_dest*x_dist_dest + y_dist_dest*y_dist_dest
-			if origin_dist <= dest_dist:
+			# their start closer to your dest than your start
+			coord_dest = Location.objects.filter(pk=ride.end_id).values()[0]
+			coordD = coord_dest['coordinate'].split(',')
+			x_dist_tsyd = abs(origin[0]-float(coordD[0]))
+			y_dist_tsyd = abs(origin[1]-float(coordD[1]))
+			x_dist_ysyd = abs(float(coordS[0])-float(coordD[0]))
+			y_dist_ysyd = abs(float(coordS[1])-float(coordD[1]))
+			tsyd_dist = x_dist_tsyd*x_dist_tsyd + y_dist_tsyd*y_dist_tsyd
+			ysyd_dist = x_dist_ysyd*x_dist_ysyd + y_dist_ysyd*y_dist_ysyd
+			# their end closer to your start than your end
+			x_dist_tdys = abs(destination[0]-float(coordS[0]))
+			y_dist_tdys = abs(destination[1]-float(coordS[1]))
+			tdys_dist = x_dist_tdys*x_dist_tdys + y_dist_tdys*y_dist_tdys
+			if origin_dist <= dest_dist and tsyd_dist <= ysyd_dist and tdys_dist <= ysyd_dist :
 				results.append(ride)
 	result_list = []
 	for item in sorted(results, key=lambda ride: ride.start_date):
@@ -620,8 +633,8 @@ def about(request):
 def authenticate(request):
 
 	# --- for local development only ---
-	request.session['netid'] = 'peyser'
-	return redirect('/home/')
+#	request.session['netid'] = 'peyser'
+#	return redirect('/home/')
 
 	# --- for production ---
 	ticket = request.GET.get('ticket',None)
