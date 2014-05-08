@@ -24,7 +24,7 @@ class Passenger(models.Model):
  	end_loc           = models.ForeignKey(Location, related_name='end_of_ride');
 
  	def __unicode__(self):
-		return unicode(self.person.netid)
+		return unicode(self.person)
 
 class Ride(models.Model):
 	max_seats              = models.IntegerField();
