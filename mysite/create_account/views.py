@@ -685,7 +685,7 @@ def profile(request):
 	# We to do it like this because the template cannot get the list of passengers from the ride by itself.
 	# "pairs" are represented by a dict
 	current_rides_driving_pairs = [];
-	current_rides_driving   = Ride.objects.filter(driver=current_user, start_date__gt=date.today());
+	current_rides_driving   = Ride.objects.filter(driver=current_user, start_date__gte=date.today());
 	for ride in current_rides_driving:
 		entry = {};
 		entry['ride'] = ride;
