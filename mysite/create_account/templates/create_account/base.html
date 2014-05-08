@@ -1,0 +1,87 @@
+{% block header %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Load Google Maps API --> 
+    <script type="text/javascript"
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBJAwkd0cOH9KcWXKyhK-TKvkCtmdm7SJk&sensor=false">
+    </script>
+
+    <title>PickMeUp</title>
+
+        <!-- Obtain Bootstrap style sheet from CDN (online service) so it doesn't have to be on my machine -->
+  <!-- Check http://www.bootstrapcdn.com/ for latest version. -->
+  <link href="custom_home.css" rel="stylesheet">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js">
+  </script>
+  <script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
+  <link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js">
+  </script>
+
+
+   <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+        font-family:"Helvetica", sans-serif;
+      }
+    </style>
+    
+    
+
+   <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+    <title>Princeton PickMeUp</title>
+	 <link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500">
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places"></script>
+    </head>
+
+ <body background="http://www.aboutnyc.org/wp-content/uploads/2014/01/P1370398-7.jpg"style="background-size: cover">
+
+{% endblock %}
+
+{% block toolbar %}
+   <nav class="navbar navbar-default" role="navigation" style="margin-top: -61px">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/home">PickMeUp</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+            <li><a href="/profile">Profile</a></li>
+            <li><a href="/inbox">Inbox</a></li>
+            <li><a href="/write_message">Write Message</a></li>
+          </ul>
+      <form class="navbar-form navbar-left" role="search">
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Search">
+        </div>
+        <button type="submit" class="btn btn-default">Submit</button>
+      </form>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="/about">About</a></li>
+        <li><a href="/logout">Logout</a></li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+{% endblock %}
+
+{% block content %}
+pass
+{% endblock %}
+
