@@ -163,8 +163,6 @@ def show_rides(request):
 	# make list of acceptable rides
 	for ride in query:
 		openNum = int(ride.open_seats)
-		# this is playing w/ pending passengers for testing
-		# should be switched to actual passengers after merge w/ Cal
 		if ride.passengers.all():
 			numPass = len(ride.passengers.all())
 		else:
@@ -210,7 +208,7 @@ def show_rides(request):
 		start_obj = Location.objects.filter(pk=start_id).values()[0]
 		end_id = item.end_id
 		end_obj = Location.objects.filter(pk=end_id).values()[0]
-		resVal = str(item.driver) + " driving from " + str(start_obj['name']) + " to " + str(end_obj['name']) + "\n Date: " + str(item.start_date) + "\n Time: " + str(item.start_time) + "\n Requested Price: " + str(item.payment) + "\n Open Seats Left: " + str(openNum - numPass)
+		resVal = [str(item.driver) + " driving from " + str(start_obj['name']) + " to " + str(end_obj['name']), "Date: " + str(item.start_date), "Time: " + str(item.start_time), "Requested Price: " + str(item.payment), "Open Seats Left: " + str(openNum - numPass)]
 		resKey = item.id
 		result_list.append({resKey : resVal})
 	C = Context({'list': result_list, 'passenger': new_passenger.id})
@@ -220,9 +218,18 @@ def confirm(request):
 	if not validId(request):
                 return redirect("/")
 	if request.method == 'POST':
-		print request.POST
-		ride_text = request.POST.get('ride_text', False)
 		ride_id = request.POST.get('ride_id', False)
+		item = Ride.objects.filter(id=ride_id)[0]
+		openNum = int(item.open_seats)
+                if item.passengers.all():
+                        numPass = len(item.passengers.all())
+                else:
+			numPass = 0
+		start_id = item.start_id
+		start_obj = Location.objects.filter(pk=start_id).values()[0]
+                end_id = item.end_id
+		end_obj = Location.objects.filter(pk=end_id).values()[0]
+		ride_text = [str(item.driver) + " driving from " + str(start_obj['name']) + " to " + str(end_obj['name']), "Date: " + str(item.start_date), "Time: " + str(item.start_time), "Requested Price: " + str(item.payment), "Open Seats Left: " + str(openNum - numPass)]
 		passenger = request.POST.get('passenger', False)
 		C = Context({'ride_text': ride_text, 'ride_id': ride_id, 'passenger': passenger})
 	return render(request, 'create_account/confirm.html', C)
@@ -232,21 +239,23 @@ def add_passenger(request):
                 return redirect("/")
 	if request.method == 'POST':
 		ride_id = request.POST.get('ride_id', False)
-		ride_text = request.POST.get('ride_text', False)
 		pass_id = request.POST.get('passenger', False)
-		ride = Ride.objects.filter(id=ride_id)
+		item = Ride.objects.filter(id=ride_id)[0]
+		start_id = item.start_id
+                start_obj = Location.objects.filter(pk=start_id).values()[0]
+                end_id = item.end_id
+                end_obj = Location.objects.filter(pk=end_id).values()[0]
+                ride_text = "the ride from " + str(start_obj['name']) + " to " + str(end_obj['name']) + " on " + str(item.start_date) + " at " + str(item.start_time)
 		user = Passenger.objects.filter(id=pass_id)
-		if len(ride) > 1:
-			raise MultipleObjectsReturned
 		if len(user) > 1:
 			raise MultipleObjectsReturned
 		# check if this person is the driver for this ride
-		driver = ride[0].driver
+		driver = item.driver
 		flag = True
 		if driver.id == user[0].person.id:
 			flag = "You can't be added!"
 		else:
-			pass_list = ride[0].pending_passengers
+			pass_list = item.pending_passengers
 			pass_list.add(user[0])
 			flag = False
 		if flag:

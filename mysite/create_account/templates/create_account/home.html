@@ -241,12 +241,11 @@ function geolocate() {
              onFocus="geolocate()" type="text" style="border: 2px solid black"></input>
  		   </div>
        <br>
- 		      <!--{{ form.as_p }}-->
+ 		      {{ form.as_p }}
           <!--<input type="submit" name="drive" value="I'm driving.">
           <input type="submit" name="hitch" value="I'm looking for a ride.">-->
-          <button type="submit" name="drive" class="btn btn-default">I'm Driving</button>
-          <button type="submit" name="hitch" class="btn btn-default">I'm Looking for a Ride</button>
-
+          <input type="submit" name="drive" value="I'm driving." class="btn btn-default">
+          <input type="submit" name="hitch" value="I'm looking for a ride." class="btn btn-default">
           <div class="test"></div>
 
         </form>

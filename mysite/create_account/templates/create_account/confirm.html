@@ -76,9 +76,11 @@
       <div class="starter-template" align="center">
         <h1 style="color:black;" align="center">Are you sure?!</h1>
         <p class="lead" style="color:black;" align="center">This is the ride you've selected: </p>
-        <p class="lead" style="color:black;" align="center"> {{ride_text}} </p>
+	{% for line in ride_text %}
+          <p class="lead" style="color:black;" align="center"> {{line}}</p>
+	{% endfor %}
         <p class="lead" style="color:black;" align="center"> Would you like to be added to it?</p>
-        <button type="button" onclick='add_to_ride("{{ride_text}}", "{{ride_id}}")'> Confirm! </button>
+        <button type="button" onclick='add_to_ride("{{ride_id}}")'> Confirm! </button>
         <button type="button" onclick="goBack()"> No, go back. </button>
       </div>
 
@@ -116,8 +118,8 @@
         form.submit();
     }
 
-    function add_to_ride(ride_text, ride_id) {
-      post_to_url('/add_me/', {'ride_text': ride_text, 'ride_id' : ride_id, 'passenger': '{{passenger}}', csrfmiddlewaretoken: '{{ csrf_token }}'});
+    function add_to_ride(ride_id) {
+      post_to_url('/add_me/', {'ride_id' : ride_id, 'passenger': '{{passenger}}', csrfmiddlewaretoken: '{{ csrf_token }}'});
     }
 </script>
 <script>

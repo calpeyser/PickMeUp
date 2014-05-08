@@ -26,8 +26,8 @@ class ModelCommaSeparatedChoiceField(forms.ModelMultipleChoiceField):
 
 # Create the form class for users
 class UserForm(forms.Form):
-    last_name = forms.CharField(label="First name");
-    first_name = forms.CharField(label="Last name");
+    first_name = forms.CharField(label="First name");
+    last_name = forms.CharField(label="Last name");
     phone_number = forms.CharField(label="Phone number");
 
 

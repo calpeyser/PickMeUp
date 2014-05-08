@@ -77,7 +77,11 @@
           {% for result in list %}
             {% for key, value in result.items %}
             <div align="center">
-              <button type="button" onclick='add_to_ride("{{value}}", "{{key}}")'> {{value}} </button>
+              <button type="button" align="left" onclick='add_to_ride("{{key}}")'> 
+		{% for line in value %}
+	          {{line}} <br>
+		{% endfor %}
+	      </button>
             </div>
             {% endfor%} 
             <br>
@@ -121,8 +125,8 @@
         form.submit();
     }
 
-    function add_to_ride(ride_text, ride_id) {
-      post_to_url('/confirm/', {'ride_text': ride_text, 'ride_id' : ride_id, 
+    function add_to_ride(ride_id) {
+      post_to_url('/confirm/', {'ride_id' : ride_id, 
         'passenger': '{{passenger}}', csrfmiddlewaretoken: '{{ csrf_token }}'});
     }
   </script>
