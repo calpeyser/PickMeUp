@@ -71,6 +71,12 @@
     {% for passenger in this_passengers %}
       <div class="alert alert-success">
       <p>{{passenger}}<p>
+      <p>{{passenger.person.phone_number}}</p>
+        <form action="{{ROOT}}boot_passenger" method="GET">
+          <input type="hidden" name="ride_id" value="{{this_ride.id}}">
+          <input type="hidden" name="user_id" value="{{passenger.id}}">
+          <input type="submit" name="Submit" value="Boot This Passenger" class="btn btn-default navbar-btn">
+        </form>        
       </div>
     {% endfor %}
     </ul>
