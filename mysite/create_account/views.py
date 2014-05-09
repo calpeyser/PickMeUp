@@ -425,7 +425,7 @@ def inbox(request):
 	messages_recieved = message_pruner([]);
 	for m in Message.objects.extra(order_by = ['timestamp']):
 		if current_user in m.recipients.all():
-			messages_recieved.add(m);
+	       		messages_recieved.add(m);
 
 	# get only the most recent in each converstaion
 	messages_recieved.prune();
@@ -544,15 +544,17 @@ def cancel_ride_execute(request):
 	this_ride = Ride.objects.filter(id=request.GET.get('id'))[0];
 
 	if request.GET.get('action') == 'Cancel Ride':
-		this_ride.delete();
 		
-		# send a message to the driver
-		leave_title = "User Left Ride: Automatically Generated Message";
-		leave_content = "This is an automatically generated message. " + str(current_user) + " has cancel your ride from " + str(this_ride.start) + " to " + str(this_ride.end) + " on " + str(this_ride.start_date) + "."
+		# send a message to the participants
+		leave_title = "Driver Canceled Ride: Automatically Generated Message";
+		leave_content = "This is an automatically generated message. " + str(current_user) + " has canceled your ride from " + str(this_ride.start) + " to " + str(this_ride.end) + " on " + str(this_ride.start_date) + "."
 		leave_sender = current_user;
-		leave_recipients = [this_ride.driver];
+		leave_recipients = [];
+		for par in this_ride.passengers.all():
+			leave_recipients.append(par.person);
 		message_make(leave_title, leave_content, leave_sender, leave_recipients);
-
+		
+		this_ride.delete();
 
 		return HttpResponseRedirect("/profile");
 	if request.GET.get('action') == 'Go Back':
