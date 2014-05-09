@@ -403,8 +403,10 @@ def inbox(request):
 		entry['message'] = m;	
 		if m.unread:
 			entry['unread'] = True;
-			m.unread = False;
-			m.save();
+			for message in Message.objects.all():
+				if message.id == m.id:
+					message.unread = False;
+					message.save();
 		else:
 			entry['unread'] = False;
 		messages_recieved_pairs.append(entry);
