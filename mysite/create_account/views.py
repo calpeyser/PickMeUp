@@ -270,7 +270,7 @@ def add_passenger(request):
 		flagDrive = False
 		flagPass = False
 		if driver.id == user[0].person.id:
-			flag = "You can't be added!"
+			flagDrive = "You can't be added!"
 		# check if this person is a passenger for this ride
 		passengers = item.passengers.all()
 		for dude in passengers:
@@ -282,14 +282,13 @@ def add_passenger(request):
                         if dude.person.id == user[0].person.id:
 				flagPass = "You can't be added b/c pending!"
 				break
-		else:
-			pass_list = item.pending_passengers
-			pass_list.add(user[0])
 		if flagDrive:
 			C = Context({'ride_text': ride_text, 'flagDrive': flagDrive})
 		elif flagPass:
 			C = Context({'ride_text': ride_text, 'flagPass': flagPass})
 		else:
+			pass_list = item.pending_passengers
+                        pass_list.add(user[0])
 			C = Context({'ride_text': ride_text})
 	return render(request, 'create_account/added.html', C)
 
@@ -542,7 +541,7 @@ def cancel_ride_execute(request):
 	netid = request.session['netid'];
 	current_user = User.objects.filter(netid=netid)[0]; # assume unique netids
 
-	this_ride = Ride.objects.filter(id=request.GET.get('id'));
+	this_ride = Ride.objects.filter(id=request.GET.get('id'))[0];
 
 	if request.GET.get('action') == 'Cancel Ride':
 		this_ride.delete();
@@ -709,11 +708,12 @@ def profile(request):
 	current_user = User.objects.filter(netid=netid)[0]; # assume unique netids
 
 	# Get the rides that the user is currently driving
-	current_rides_driving   = Ride.objects.filter(driver=current_user, start_date__gt=date.today());
+	current_rides_driving_pairs = [];
+	current_rides_driving   = Ride.objects.filter(driver=current_user, start_date__gte=date.today());
 	for ride in current_rides_driving:
 		entry = {};
 		entry['ride'] = ride;
-		entry['pending'] = ride.pending_passengers.all();
+		entry['pending'] = len(ride.pending_passengers.all());
 		current_rides_driving_pairs.append(entry);
 
 	# Get the rides that the user is currently a passenger in
@@ -732,7 +732,7 @@ def profile(request):
 			if current_user == passenger.person:
 				past_rides_passenger.append(ride);
 
-	return render(request, 'create_account/profile.html', {'current_rides_driving': current_rides_driving, 'current_rides_passenger': current_rides_passenger, 'past_rides_driving': past_rides_driving, 'past_rides_passenger': past_rides_passenger, 'ROOT': ROOT});
+	return render(request, 'create_account/profile.html', {'current_rides_driving_pairs': current_rides_driving_pairs, 'current_rides_passenger': current_rides_passenger, 'past_rides_driving': past_rides_driving, 'past_rides_passenger': past_rides_passenger, 'ROOT': ROOT});
 
 def logout(request):
 	if 'netid' in request.session:

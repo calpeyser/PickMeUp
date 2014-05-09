@@ -8,10 +8,14 @@
       <div class="starter-template" style="background-color: black; border: 3px solid #999999; border-radius: 25px; width: 800px; padding-bottom: 20px; position: relative">
 
     <h1 style="color:white;">Rides that you are driving</h1>
-      {% for ride in current_rides_driving %}
+      {% for pair in current_rides_driving_pairs %}
         <form action="{{ROOT}}driver_future" method="GET">
-          <input type="hidden" name="id" value="{{ride.id}}">
-          <input type="submit" value="Ride from {{ride.start}} to {{ride.end}}" class="btn btn-default navbar-btn">
+          <input type="hidden" name="id" value="{{pair.ride.id}}">
+	  {% if pair.pending == 0 %}
+	  <input type="submit" value="Ride from {{pair.ride.start}} to {{pair.ride.end}}" class="btn btn-default navbar-btn">	
+	  {% else %}
+	  <input type="submit" value="Ride from {{pair.ride.start}} to {{pair.ride.end}} | {{pair.pending}} Passengers Awaiting Approval" class="btn btn-default navbar-btn">
+	  {% endif %}
         </form>
       {% endfor %}
     <h1 style="color:white;">Rides that you are in</h1>

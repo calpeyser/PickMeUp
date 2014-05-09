@@ -3,7 +3,7 @@
 {% block content %}
 <div class="container" align="center">
 
-      <div class="starter-template" style="background-color: orange; border: 3px solid #999999; border-radius: 25px; width: 800px; padding-bottom: 20px; position: relative">
+      <div class="starter-template" style="background-color: white; border: 3px solid #999999; border-radius: 25px; width: 800px; padding-bottom: 20px; position: relative">
           <div align="center">
 
     <h1>You are driving the following ride</h1>
@@ -13,7 +13,7 @@
     <h3>Passengers Awaiting Approval:</h3>
     <ul>
       {% for passenger in this_pending %}
-      <div class="container" style="background-color: white; border: 2px solid black; border-radius: 15px; width: 250px; height: 140px; position: relative:">
+      <div class="container" style="background-color: white; border: 2px solid black; border-radius: 15px; width: 250px; height: 170px; position: relative:">
         <p>{{passenger}}<p>
         <p>{{passenger.person.phone_number}}</p>
         <p>Going from {{passenger.start_loc}} to {{passenger.end_loc}}</p>
@@ -31,7 +31,7 @@
     <h3>Approved Passengers:</h3>
     <ul>
     {% for passenger in this_passengers %}
-      <div class="container" style="background-color: white; border: 2px solid black; border-radius: 15px; width: 250px; height: 140px; position: relative:">
+      <div class="container" style="background-color: white; border: 2px solid black; border-radius: 15px; width: 250px; height: 170px; position: relative:">
       <p>{{passenger}}<p>
       <p>{{passenger.person.phone_number}}</p>
       <p>Going from {{passenger.start_loc}} to {{passenger.end_loc}}</p>

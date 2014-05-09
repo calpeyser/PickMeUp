@@ -63,20 +63,20 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
 # ---- For deployment
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': os.path.join(BASE_DIR, '/var/www/PickMeUp/mysite/db.sqlite3'),
-#     }
-# }
-
-# ---- For development.  Don't delete this. Just comment it out. I'm looking at you EVAN.
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, '/Users/calpeyser/Desktop/EC2/PickMeUp/mysite/sqlite3'),
+        'NAME': os.path.join(BASE_DIR, '/var/www/PickMeUp/mysite/db.sqlite3'),
     }
 }
+
+# ---- For development.  Don't delete this. Just comment it out. I'm looking at you EVAN.
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': os.path.join(BASE_DIR, '/Users/calpeyser/Desktop/EC2/PickMeUp/mysite/sqlite3'),
+#    }
+#}
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
