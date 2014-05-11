@@ -46,22 +46,22 @@ document.onkeypress = stopRKey;
   <br><br>
 <div class="container" align="center">
 
-      <div class="starter-template" style="background-color: white; border: 3px solid #999999; border-radius: 25px; width: 800px; padding-bottom: 20px; position: relative">
+      <div class="starter-template" style="background-color: white; border: 3px solid #999999; border-radius: 25px; width: 800px; padding-bottom: 20px; position;relative">
 
     <h1> Hello! Looks like we haven't met you before...</h1>
     <h2> Welcome to PickMeUp! Please help us out so that we can recognize you next time?</h2>
-    <div class="container">
-      <div class="starter-template" align="center">
-	<div class="btn btn-default navbar-btn">
+    <center>
+         <div class="starter-template" align="center">
+	<div align="center" class="btn btn-default navbar-btn">
 	  <form method="POST" action=""> {% csrf_token %}
-	    <div align="center">
-	      {{form.as_p}}
+	   <div  align="center">
+	       {{form.as_p}}
 	      <input type="submit" value="Submit" class="btn btn-default navbar-btn">
 	    </div>
 	  </form>
 	</div>
-      </div>
-    </div>
+       </div>
+    <center>
 </div>
    </body>
 
