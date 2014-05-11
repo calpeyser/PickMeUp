@@ -388,6 +388,7 @@ def write_message_target(request):
 			this_conversation = Conversation(title=message_form.cleaned_data['title']);
 			this_conversation.save();
 			this_conversation.participants.add(target_user);
+			this_conversation.participants.add(current_user);
 			new_message = Message(sender = current_user, title = message_form.cleaned_data['title'], message = message_form.cleaned_data['message'], unread = True, timestamp = datetime.now(), conversation = this_conversation); 
 			new_message.save();
 			new_message.recipients.add(target_user);
@@ -436,7 +437,7 @@ def inbox(request):
 			out += "----------------------------------------\\n";
 		return unicode(out);
 
-	for converstaion in conversations_involved:
+	for conversation in conversations_involved:
 		# the hardest to read line of code in this app. It gets the messages in this conversation, and sorts them by timestamp
 		ordered_messages = list(reversed(sorted(filter(lambda m: m.conversation == conversation, Message.objects.all()), key=lambda time: time.timestamp)));
 		# make sure we want to display this conversation
@@ -456,7 +457,7 @@ def inbox(request):
 		for_template['title']        = pruned_ordered_messages[0].title;
 		for_template['timestamp']    = pruned_ordered_messages[0].timestamp;
 		for_template['sender']       = pruned_ordered_messages[0].sender;
-		for_template['conversation'] = converstaion;
+		for_template['conversation'] = conversation;
 		for_template['id']           = pruned_ordered_messages[0].id;
 		messages_recieved.append(for_template);
 
@@ -487,7 +488,7 @@ def sent(request):
 			out += "----------------------------------------\\n";
 		return unicode(out);
 
-	for converstaion in conversations_involved:
+	for conversation in conversations_involved:
 		# the hardest to read line of code in this app. It gets the messages in this conversation, and sorts them by timestamp
 		ordered_messages = list(reversed(sorted(filter(lambda m: m.conversation == conversation, Message.objects.all()), key=lambda time: time.timestamp)));
 		for m in ordered_messages:
@@ -505,7 +506,7 @@ def sent(request):
 		for_template['title']        = pruned_ordered_messages[0].title;
 		for_template['timestamp']    = pruned_ordered_messages[0].timestamp;
 		for_template['sender']       = pruned_ordered_messages[0].sender;
-		for_template['conversation'] = converstaion;
+		for_template['conversation'] = conversation;
 		for_template['id']           = pruned_ordered_messages[0].id;
 		messages_recieved.append(for_template);
 
@@ -622,6 +623,7 @@ def choose_passenger(request):
 		accept_title = "Accepted To Ride: Automatically Generated Message";
 		accept_content = "Hello! " + str(current_user) + " has begrudgingly accepted you to their ride from " + str(this_ride.start) + " to " + str(this_ride.end) + " on " + str(this_ride.start_date) + ". Our server is sending you this message, which is pretty cool, yo!"
 		accept_recipients = [this_user.person];
+		accept_sender = current_user;
 		message_make(accept_title, accept_content, accept_sender, accept_recipients);
 
 	if option_decline:
