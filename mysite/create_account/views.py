@@ -164,8 +164,6 @@ def show_rides(request):
 	# make list of acceptable rides
 	for ride in query:
 		openNum = int(ride.open_seats)
-		# this is playing w/ pending passengers for testing
-		# should be switched to actual passengers after merge w/ Cal
 		if ride.passengers.all():
 			numPass = len(ride.passengers.all())
 		else:
@@ -224,7 +222,12 @@ def show_rides(request):
 		start_obj = Location.objects.filter(pk=start_id).values()[0]
 		end_id = item.end_id
 		end_obj = Location.objects.filter(pk=end_id).values()[0]
-		resVal = [str(item.driver) + " driving from " + str(start_obj['name']) + " to " + str(end_obj['name']), "Date: " + str(item.start_date), "Time: " + str(item.start_time), "Requested Price: " + str(item.payment), "Open Seats Left: " + str(openNum - numPass)]
+		openNum = int(item.open_seats)
+		if item.passengers.all():
+			numPass = len(item.passengers.all())
+                else:
+			numPass = 0
+		resVal = [str(item.driver) + " driving from " + str(start_obj['name']) + " to " + str(end_obj['name']), "Date: " + str(item.start_date), "Time: " + str(item.start_time), "Requested Price: " + str(item.payment), "Open Seats: " + str(openNum - numPass)]
 		resKey = item.id
 		result_list.append({resKey : resVal})
 	C = Context({'list': result_list, 'passenger': new_passenger.id})
