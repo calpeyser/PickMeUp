@@ -30,18 +30,12 @@
                     </tr>
                   </thead>
                   <tbody id="items">
-                    {%for pair in messages_recieved_pairs%}
-                    <tr id="{{message.id}}" onclick="document.getElementById('email_display').value = 'On {{pair.message.timestamp}}, {{pair.message.sender}} wrote: \n{{pair.message.message}}'">
-                      {% if pair.unread %}
-                        <td><div class="alert alert-success"><h4 style="color:black;">{{pair.message.title}}</h4></div></td>
-                        <td><div class="alert alert-success"><h4 style="color:black;">{{pair.message.sender}}</h4></div></td>
-                        <td><div class="alert alert-success"><h4 style="color:black;">{{pair.message.timestamp}}</h4></div></td>
-                      {% else %}
-                        <td><div class="alert alert-warning"><p style="color:black; ">{{pair.message.title}}</p></div></td>
-                        <td><div class="alert alert-warning"><p style="color:black; ">{{pair.message.sender}}</p></div></td>
-                        <td><div class="alert alert-warning"><p style="color:black; ">{{pair.message.timestamp}}</p></div></td>
-                      {% endif %}
-                      <td><button onclick="window.location.href='/write_message_conversation/?id={{pair.message.conversation.id}}'">Reply</td>
+                    {%for message in messages_recieved%}
+                    <tr id="{{message.id}}" onclick="document.getElementById('email_display').value = '{{message.message}}'">
+                        <td><div class="alert alert-warning"><p style="color:black; ">{{message.title}}</p></div></td>
+                        <td><div class="alert alert-warning"><p style="color:black; ">{{message.sender}}</p></div></td>
+                        <td><div class="alert alert-warning"><p style="color:black; ">{{message.timestamp}}</p></div></td>
+                      <td><button onclick="window.location.href='/write_message_conversation/?id={{message.conversation.id}}'">Reply</td>
                     </tr>
                     {%endfor%}
                   </tbody>

@@ -32,7 +32,7 @@
                     <script>
                       var message_string = new String('{{message.message}}');
                     </script>
-                    <tr id="{{message.id}}" onclick="document.getElementById('email_display').value = 'On {{message.timestamp}}, {{message.sender}} wrote: \n{{message.message}}'">
+                    <tr id="{{message.id}}" onclick="document.getElementById('email_display').value = '{{message.message}}'">
                       <td><div class="alert alert-danger"><p style="color:black;">{{message.title}}</p></div></td>
                       <td><div class="alert alert-danger"><p style="color:black;">{{message.timestamp}}</p></div></td>
                     </tr>
