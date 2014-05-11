@@ -4,7 +4,6 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.db.models import Q
 from create_account.forms import UserForm, RideForm, HomeForm, MessageForm, MessageFormRide, MessageFormConversation, MessageFormTarget, CancelRideForm
 from create_account.models import User, Location, Ride, Message, Conversation, Passenger
-from message_pruner import *
 from message_maker import *
 from CASClient import *
 import datetime
@@ -14,8 +13,8 @@ from django.template import Context, RequestContext
 import copy
 
 global ROOT 
-ROOT = 'http://carshare.tigerapps.org/'
-#ROOT = 'http://127.0.0.1:8000/'
+#ROOT = 'http://carshare.tigerapps.org/'
+ROOT = 'http://127.0.0.1:8000/'
 
 # view to show form to populate user data
 def user(request):
@@ -310,6 +309,7 @@ def write_message(request):
 				this_participants = message_form.cleaned_data['recipients'];
 				for u in this_participants:
 					this_conversation.participants.add(u);
+				this_conversation.participants.add(current_user);
 				new_message = Message(sender = current_user, title = message_form.cleaned_data['title'], message = message_form.cleaned_data['message'], unread = True, timestamp = datetime.now(), conversation = this_conversation);
 				new_message.save();
 				for u in this_participants:
@@ -421,37 +421,43 @@ def inbox(request):
 	current_user = User.objects.filter(netid=netid)[0]; # assume unique netids
 
 	# get conversations that involve the user.  Map those conversations to their first messages
-	conversations_recieved = [];
-	conversations_first_messages = [];
+	conversations_involved = [];
 
-	# get messages that the user has recieved, ordered by timestamp
-	messages_recieved = message_pruner([]);
-	for m in Message.objects.extra(order_by = ['timestamp']):
-		if current_user in m.recipients.all():
-	       		messages_recieved.add(m);
+	for conversation in Conversation.objects.all():
+		if current_user in conversation.participants.all():
+			conversations_involved.append(conversation);
 
-	# get only the most recent in each converstaion
-	messages_recieved.prune();
-	messages_recieved = messages_recieved.return_list();
+	# for each of those messages, compute an appropriate message for the user
+	messages_recieved = [];
+	def message_digest(list_of_messages):
+		out = "";
+		for message in list_of_messages:
+			out += "On " + str(message.timestamp) + ", " + str(message.sender) + " wrote: \\n" + str(message.message) + "\\n";
+			out += "----------------------------------------\\n";
+		return unicode(out);
 
-	# we need pairs in order to encapsulate if each message has been read
-	messages_recieved_pairs = [];
-	for m in messages_recieved:
-		entry = {};
-		entry['message'] = m;	
-		if m.unread:
-			entry['unread'] = True;
-			for message in Message.objects.all():
-				if message.id == m.id:
-					message.unread = False;
-					message.save();
-		else:
-			entry['unread'] = False;
-		messages_recieved_pairs.append(entry);
+	for converstaion in conversations_involved:
+		# the hardest to read line of code in this app. It gets the messages in this conversation, and sorts them by timestamp
+		ordered_messages = list(reversed(sorted(filter(lambda m: m.conversation == conversation, Message.objects.all()), key=lambda time: time.timestamp)));
+		# now we need the subset of ordered_messages that starts with the first message not sent by this user
+		index_of_first_recieved = min(map(lambda m: ordered_messages.index(m), filter(lambda m: m.sender != current_user, ordered_messages)));
+		pruned_ordered_messages = ordered_messages[index_of_first_recieved:];
 
-	print messages_recieved_pairs;
-	return render(request, 'create_account/inbox.html', {'messages_recieved_pairs': messages_recieved_pairs});
+		# now we need to put something in messages_recieved that encapsulates all of the data that the display will need
+		for_template = {};
+		for_template['message']      = message_digest(pruned_ordered_messages);
+		for_template['title']        = pruned_ordered_messages[0].title;
+		for_template['timestamp']    = pruned_ordered_messages[0].timestamp;
+		for_template['sender']       = pruned_ordered_messages[0].sender;
+		for_template['conversation'] = converstaion;
+		for_template['id']           = pruned_ordered_messages[0].id;
+		messages_recieved.append(for_template);
 
+
+	return render(request, 'create_account/inbox.html', {'messages_recieved': messages_recieved});
+
+# pretty much the same as inbox, but it was so much easier just to write it twice... The only difference is that we're looking
+# for the most recent message that the user sent, as opposed to did not.
 def sent(request):
 	if not validId(request):
                 return redirect("/")
@@ -459,18 +465,38 @@ def sent(request):
 	current_user = User.objects.filter(netid=netid)[0]; # assume unique netids
 
 	# get conversations that involve the user.  Map those conversations to their first messages
-	conversations_recieved = [];
-	conversations_first_messages = [];
+	conversations_involved = [];
 
-	# get messages that the user has sent, ordered by timestamp
-	messages_recieved = message_pruner([]);
-	for m in Message.objects.extra(order_by = ['timestamp']):
-		if current_user == m.sender:
-			messages_recieved.add(m);
+	for conversation in Conversation.objects.all():
+		if current_user in conversation.participants.all():
+			conversations_involved.append(conversation);
 
-	# get only the most recent in each converstaion
-	messages_recieved.prune();
-	messages_recieved = messages_recieved.return_list();
+	# for each of those messages, compute an appropriate message for the user
+	messages_recieved = [];
+	def message_digest(list_of_messages):
+		out = "";
+		for message in list_of_messages:
+			out += "On " + str(message.timestamp) + ", " + str(message.sender) + " wrote: \\n" + str(message.message) + "\\n";
+			out += "----------------------------------------\\n";
+		return unicode(out);
+
+	for converstaion in conversations_involved:
+		# the hardest to read line of code in this app. It gets the messages in this conversation, and sorts them by timestamp
+		ordered_messages = list(reversed(sorted(filter(lambda m: m.conversation == conversation, Message.objects.all()), key=lambda time: time.timestamp)));
+		# now we need the subset of ordered_messages that starts with the first message sent by this user
+		index_of_first_recieved = min(map(lambda m: ordered_messages.index(m), filter(lambda m: m.sender == current_user, ordered_messages)));
+		pruned_ordered_messages = ordered_messages[index_of_first_recieved:];
+
+		# now we need to put something in messages_recieved that encapsulates all of the data that the display will need
+		for_template = {};
+		for_template['message']      = message_digest(pruned_ordered_messages);
+		for_template['title']        = pruned_ordered_messages[0].title;
+		for_template['timestamp']    = pruned_ordered_messages[0].timestamp;
+		for_template['sender']       = pruned_ordered_messages[0].sender;
+		for_template['conversation'] = converstaion;
+		for_template['id']           = pruned_ordered_messages[0].id;
+		messages_recieved.append(for_template);
+
 
 	return render(request, 'create_account/sent.html', {'messages_recieved': messages_recieved});
 
@@ -550,7 +576,7 @@ def cancel_ride_execute(request):
 		
 		# send a message to the participants
 		leave_title = "Driver Canceled Ride: Automatically Generated Message";
-		leave_content = "This is an automatically generated message. " + str(current_user) + " has canceled your ride from " + str(this_ride.start) + " to " + str(this_ride.end) + " on " + str(this_ride.start_date) + "."
+		leave_content = "Hello! " + str(current_user) + " has unfortunately canceled their ride from " + str(this_ride.start) + " to " + str(this_ride.end) + " on " + str(this_ride.start_date) + ". Our server is sending you this message, which is pretty cool, yo!"
 		leave_sender = current_user;
 		leave_recipients = [];
 		for par in this_ride.passengers.all():
@@ -578,13 +604,11 @@ def choose_passenger(request):
 	option_decline = request.GET.get('Decline', False);
 
 	if option_approve:
-		print "hi";
 		this_ride.pending_passengers.remove(this_user);
 		this_ride.passengers.add(this_user);
 		# send message
 		accept_title = "Accepted To Ride: Automatically Generated Message";
-		accept_content = "This is an automatically generated message. " + str(current_user) + " has accepted you to his/her ride from " + str(this_ride.start) + " to " + str(this_ride.end) + " on " + str(this_ride.start_date) + "."
-		accept_sender = current_user;
+		accept_content = "Hello! " + str(current_user) + " has begrudgingly accepted you to their ride from " + str(this_ride.start) + " to " + str(this_ride.end) + " on " + str(this_ride.start_date) + ". Our server is sending you this message, which is pretty cool, yo!"
 		accept_recipients = [this_user.person];
 		message_make(accept_title, accept_content, accept_sender, accept_recipients);
 
@@ -592,7 +616,7 @@ def choose_passenger(request):
 		this_ride.pending_passengers.remove(this_user);
 		# send message
 		decline_title = "Declined From Ride: Automatically Generated Message";
-		decline_content = "This is an automatically generated message. " + str(current_user) + " has declined you from his/her ride from " + str(this_ride.start) + " to " + str(this_ride.end) + " on " + str(this_ride.start_date) + "."
+		decline_content = "Hello! " + str(current_user) + " has cruelly declined your request to join their ride from " + str(this_ride.start) + " to " + str(this_ride.end) + " on " + str(this_ride.start_date) + ". Our server is sending you this message, which is pretty cool, yo!"
 		decline_sender = current_user;
 		decline_recipients = [this_user.person];
 		message_make(decline_title, decline_content, decline_sender, decline_recipients);
@@ -620,7 +644,7 @@ def boot_passenger(request):
 
 	# send that passenger a message
 	boot_title = "Removal: Automatically Generated Message";
-	boot_content = "This is an automatically generated message. " + str(this_ride.driver) + " has removed you from their ride from " + str(this_ride.start) + " to " + str(this_ride.end) + " on " + str(this_ride.start_date) + "."
+	boot_content = "Hello! " + str(current_user) + " has rudely discareded you from their ride from " + str(this_ride.start) + " to " + str(this_ride.end) + " on " + str(this_ride.start_date) + ". Our server is sending you this message, which is pretty cool, yo!"
 	boot_sender = current_user;
 	boot_recipients = [this_user.person];
 	message_make(boot_title, boot_content, boot_sender, boot_recipients);
@@ -642,7 +666,6 @@ def leave_ride(request):
 	this_user = Passenger.objects.filter(person=current_user)[0];
 
 	# leave the ride
-	print this_ride.passengers.all();
 	passengers = [];
 	for passenger in this_ride.passengers.all():
 		if passenger.person == current_user:
@@ -664,8 +687,8 @@ def about(request):
 def authenticate(request):
 
 	# for development
-	#request.session["netid"] = "peyser";
-	#return redirect('home/');
+	request.session["netid"] = "valya";
+	return redirect('home/');
 
 	# --- for production ---
 	ticket = request.GET.get('ticket',None)
