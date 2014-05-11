@@ -439,6 +439,13 @@ def inbox(request):
 	for converstaion in conversations_involved:
 		# the hardest to read line of code in this app. It gets the messages in this conversation, and sorts them by timestamp
 		ordered_messages = list(reversed(sorted(filter(lambda m: m.conversation == conversation, Message.objects.all()), key=lambda time: time.timestamp)));
+		# make sure we want to display this conversation
+		for m in ordered_messages:
+			if m.sender != current_user:
+				break;
+		else:
+			break;
+
 		# now we need the subset of ordered_messages that starts with the first message not sent by this user
 		index_of_first_recieved = min(map(lambda m: ordered_messages.index(m), filter(lambda m: m.sender != current_user, ordered_messages)));
 		pruned_ordered_messages = ordered_messages[index_of_first_recieved:];
@@ -483,6 +490,11 @@ def sent(request):
 	for converstaion in conversations_involved:
 		# the hardest to read line of code in this app. It gets the messages in this conversation, and sorts them by timestamp
 		ordered_messages = list(reversed(sorted(filter(lambda m: m.conversation == conversation, Message.objects.all()), key=lambda time: time.timestamp)));
+		for m in ordered_messages:
+			if current_user == m.sender:
+				break;
+		else:
+			break;
 		# now we need the subset of ordered_messages that starts with the first message sent by this user
 		index_of_first_recieved = min(map(lambda m: ordered_messages.index(m), filter(lambda m: m.sender == current_user, ordered_messages)));
 		pruned_ordered_messages = ordered_messages[index_of_first_recieved:];
