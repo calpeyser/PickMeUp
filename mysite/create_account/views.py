@@ -13,8 +13,8 @@ from django.template import Context, RequestContext
 import copy
 
 global ROOT 
-#ROOT = 'http://carshare.tigerapps.org/'
-ROOT = 'http://127.0.0.1:8000/'
+ROOT = 'http://carshare.tigerapps.org/'
+#ROOT = 'http://127.0.0.1:8000/'
 
 # view to show form to populate user data
 def user(request):
@@ -687,8 +687,8 @@ def about(request):
 def authenticate(request):
 
 	# for development
-	request.session["netid"] = "valya";
-	return redirect('home/');
+#	request.session["netid"] = "valya";
+#	return redirect('home/');
 
 	# --- for production ---
 	ticket = request.GET.get('ticket',None)
