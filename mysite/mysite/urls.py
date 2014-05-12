@@ -1,9 +1,11 @@
 import autocomplete_light
 autocomplete_light.autodiscover()
 
+from django import views
 from django.conf.urls import patterns, include, url
 from django.conf.urls.static import static
 from django.conf import settings
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 import CASClient
 
@@ -49,3 +51,5 @@ urlpatterns = patterns('',
     url(r'^logout/', 'create_account.views.logout'),
     url(r'^new_user/', 'create_account.views.new_user'),
 ) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+urlpatterns += staticfiles_urlpatterns()

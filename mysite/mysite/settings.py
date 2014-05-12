@@ -20,9 +20,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SECRET_KEY = 'svdq9yj$!yq438*yw!jp^x%%su_a*m8#o@o9p&+uen9*isdmw7'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-TEMPLATE_DEBUG = False
+TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = ['carshare.tigerapps.org']
 
@@ -101,8 +101,13 @@ STATIC_ROOT = '/var/www/PickMeUp/mysite/mysite/static/'
 #STATIC_ROOT = '/Users/calpeyser/Desktop/EC2/PickMeUp/mysite/mysite/static'
 
 #STATICFILES_DIRS = (
-#    os.path.join(BASE_DIR, "static"),
+#    os.path.join(BASE_DIR, "mysite/static/"),
 #)
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.core.context_processors.static',
+    'django.contrib.auth.context_processors.auth',
+)
 
 # Cal: I'm adding this to support autocomplete.  
 TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'create_account/templates/create_account/')]
