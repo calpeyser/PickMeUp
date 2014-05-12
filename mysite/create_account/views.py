@@ -428,6 +428,7 @@ def inbox(request):
 		if current_user in conversation.participants.all():
 			conversations_involved.append(conversation);
 
+
 	# for each of those messages, compute an appropriate message for the user
 	messages_recieved = [];
 	def message_digest(list_of_messages):
@@ -445,7 +446,7 @@ def inbox(request):
 			if m.sender != current_user:
 				break;
 		else:
-			break;
+			continue;
 
 		# now we need the subset of ordered_messages that starts with the first message not sent by this user
 		index_of_first_recieved = min(map(lambda m: ordered_messages.index(m), filter(lambda m: m.sender != current_user, ordered_messages)));
@@ -460,7 +461,6 @@ def inbox(request):
 		for_template['conversation'] = conversation;
 		for_template['id']           = pruned_ordered_messages[0].id;
 		messages_recieved.append(for_template);
-
 
 	return render(request, 'create_account/inbox.html', {'messages_recieved': messages_recieved});
 
@@ -495,7 +495,7 @@ def sent(request):
 			if current_user == m.sender:
 				break;
 		else:
-			break;
+			continue;
 		# now we need the subset of ordered_messages that starts with the first message sent by this user
 		index_of_first_recieved = min(map(lambda m: ordered_messages.index(m), filter(lambda m: m.sender == current_user, ordered_messages)));
 		pruned_ordered_messages = ordered_messages[index_of_first_recieved:];
