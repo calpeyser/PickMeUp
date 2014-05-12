@@ -462,7 +462,7 @@ def inbox(request):
 		for_template['id']           = pruned_ordered_messages[0].id;
 		messages_recieved.append(for_template);
 
-	return render(request, 'create_account/inbox.html', {'messages_recieved': messages_recieved});
+	return render(request, 'create_account/inbox.html', {'messages_recieved': list(reversed(messages_recieved))});
 
 # pretty much the same as inbox, but it was so much easier just to write it twice... The only difference is that we're looking
 # for the most recent message that the user sent, as opposed to did not.
@@ -511,7 +511,7 @@ def sent(request):
 		messages_recieved.append(for_template);
 
 
-	return render(request, 'create_account/sent.html', {'messages_recieved': messages_recieved});
+	return render(request, 'create_account/sent.html', {'messages_recieved': list(reversed(messages_recieved))});
 
 def driver_past(request):
 	if not validId(request):
