@@ -88,7 +88,7 @@ def home(request):
 		if home_form.is_valid():
 			origin = Location.objects.filter(coordinate=home_form.cleaned_data['start'])
 			destination = Location.objects.filter(coordinate=home_form.cleaned_data['end'])
-			
+
 			if len(origin) == 0:
 				origin = Location(coordinate = home_form.cleaned_data['start'], name = home_form.cleaned_data['startname'], address = "");
 			else:

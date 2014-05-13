@@ -70,20 +70,18 @@ var componentForm = {
 function initialize() {
   // Create the autocomplete object, restricting the search
   // to geographical location types.
-  autocomplete1 = new google.maps.places.Autocomplete(
-      /** @type {HTMLInputElement} */(document.getElementById('autocomplete1')),
-      { types: ['geocode'] });
+  autocomplete1 = new google.maps.places.SearchBox(
+      /** @type {HTMLInputElement} */(document.getElementById('autocomplete1')));
   // When the user selects an address from the dropdown,
   // populate the address fields in the form.
-  google.maps.event.addListener(autocomplete1, 'place_changed', function() {
+  google.maps.event.addListener(autocomplete1, 'places_changed', function() {
     fillInAddressStart();
   });
-  autocomplete2 = new google.maps.places.Autocomplete(
-      /** @type {HTMLInputElement} */(document.getElementById('autocomplete2')),
-      { types: ['geocode'] });
+  autocomplete2 = new google.maps.places.SearchBox(
+      /** @type {HTMLInputElement} */(document.getElementById('autocomplete2')));
   // When the user selects an address from the dropdown,
   // populate the address fields in the form.
-  google.maps.event.addListener(autocomplete2, 'place_changed', function() {
+  google.maps.event.addListener(autocomplete2, 'places_changed', function() {
     fillInAddressEnd();
   });
 }
@@ -91,17 +89,18 @@ function initialize() {
 // [START region_fillform]
 function fillInAddressStart() {
   // Get the place details from the autocomplete object.
-  var place = autocomplete1.getPlace();
+  var place = autocomplete1.getPlaces()[0];
+
   document.getElementById('id_start').value = place.geometry.location['k'].toString().concat(', ').concat(place.geometry.location['A'].toString())
-  document.getElementById('id_startname').value = place.formatted_address
+  document.getElementById('id_startname').value = place.name
 }
 
 function fillInAddressEnd() {
   // Get the place details from the autocomplete object.
-  var place = autocomplete2.getPlace();
-  
+  var place = autocomplete2.getPlaces()[0];
+
   document.getElementById('id_end').value = place.geometry.location['k'].toString().concat(', ').concat(place.geometry.location['A'].toString())
-  document.getElementById('id_endname').value = place.formatted_address
+  document.getElementById('id_endname').value = place.name
 }
 // [END region_fillform]
 

@@ -12,7 +12,7 @@ class User(models.Model):
 
 class Location(models.Model):
 	coordinate     = models.CharField(max_length = 100); # replace 50 with actual coordinate length, validate with regexp
-	name           = models.CharField(max_length = 50, null = True);
+	name           = models.CharField(max_length = 500, null = True);
 	address        = models.CharField(max_length = 100, null = True);
 	
 	def __unicode__(self):
